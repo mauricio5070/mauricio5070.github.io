@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Walmart Sales Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.min.css" />
+    <style>
+        /* Responsive styles for the iframe */
+        iframe {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+        }
+
+        /* Color scheme similar to the index page */
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #333;
+        }
+
+        a {
+            color: #007BFF;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Center the Walmart Sales Dashboard title */
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+
+        /* Make the images 20% bigger and centered */
+        img {
+            max-width: 80%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Sticky back button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back to Index Button -->
+    <div class="back-button">
+        <a href="index.html">
+            <button>&larr; Home</button>
+        </a>
+    </div>
+
+    <!-- PDF Showcase -->
+    <h1>Walmart Sales Dashboard</h1>
+    <h2>Description:</h2>
+    <p>Simple sales dashboard created with Kaggle data:</p>
+    <ol>
+        <li>Top 10 selling stores on the timeframe selected.</li>
+        <li>Top 20 best-selling items overall and per store.</li>
+        <li>Top 10 best-selling departments overall and per store.</li>
+        <li>Trend of sales on a period overall and per store.</li>
+    </ol>
+
+
+    <h2>Download Walmart Sales Dashboard Report:</h2>
+    <a href="/walmartSales.pbix" download>
+        <button>Download Walmart Sales Dashboard (.pbix)</button>
+    </a>
+
+    <!-- Visible PDF Showcase -->
+    <h2>Walmart Sales Dashboard PDF:</h2>
+    <div id="pdf-container">
+        <iframe src="walmartSales.pdf" style="width: 100%; height: 800px;"></iframe>
+    </div>
+
+    <p>SQL queries for retrieving the information of points b and c for all stores overall:</p>
+    <pre><code class="language-sql">
+        SELECT TOP (20) Product_Name, count(*) AS "TotalQuantity"
+        FROM Details
+        INNER JOIN Products ON Details.product_id = Products.product_Id
+        GROUP BY Product_Name
+        ORDER BY TotalQuantity DESC;
+    </code></pre>
+    <img src="images/WMquery_top20.JPG" alt="Query Result for Top 20 Best-Selling Items" />
+    <pre><code class="language-sql">
+        SELECT TOP (10) department, sum(Sale_Price) AS "TotalSales"
+        FROM Details
+        INNER JOIN Products ON Details.product_id = Products.product_Id
+        JOIN Department_Detail ON Products.department_Id = Department_Detail.department_Id
+        GROUP BY department
+        ORDER BY TotalSales DESC;
+    </code></pre>
+    <img src="images/WMquery_top10.JPG" alt="Query Result for Top 10 Best-Selling Items" />
+
+
+    <!-- Prism.js and its components -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-sql.min.js"></script>
+    <script>
+        Prism.highlightAll();
+    </script>
+
+</body>
+</html>
