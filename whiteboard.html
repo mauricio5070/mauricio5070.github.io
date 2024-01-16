@@ -39,14 +39,16 @@
     </div>
 
     <script>
-        const gistId = "907ac201c050310bba2b1129fbba4be5";
+        const repoOwner = "mauricio5070";
+        const repoName = "mauricio5070.github.io";
+        const path = "notes.txt";
         const githubToken = "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";
         let authenticated = false;
 
         function authenticate() {
             const enteredPasscode = document.getElementById("passcode").value;
 
-            if (enteredPasscode === "q1w2e3") {
+            if (enteredPasscode === "q2w3e4") {
                 document.getElementById("authentication-form").style.display = "none";
                 document.getElementById("notes-list").style.display = "block";
                 authenticated = true;
@@ -62,11 +64,14 @@
                 return;
             }
 
-            fetch(`https://api.github.com/gists/${gistId}`, { headers: { "Authorization": `token ${githubToken}` } })
+            fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+                headers: {
+                    "Authorization": `token ${githubToken}`
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data); // Log the response for debugging
-                    const notes = atob(data.files['notes.txt'].content).split("\n").filter(note => note.trim() !== "");
+                    const notes = atob(data.content).split("\n").filter(note => note.trim() !== "");
                     renderNotes(document.getElementById('notes'), notes);
                 })
                 .catch(error => {
@@ -82,31 +87,24 @@
 
             const note = prompt('Enter your note:');
             if (note !== null && note.trim() !== '') {
-                fetch(`https://api.github.com/gists/${gistId}`, {
-                    method: 'PATCH',
+                fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+                    method: 'PUT',
                     headers: {
                         "Authorization": `token ${githubToken}`,
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        files: {
-                            'notes.txt': {
-                                content: btoa(`${note.trim()}\n`),
-                            },
-                        },
-                    }),
+                        message: "Add new note",
+                        content: btoa(`${note.trim()}\n`)
+                    })
                 })
-                .then(response => {
-                    console.log(response); // Log the response for debugging
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data); // Log the response data for debugging
-                    viewNotes(); // Refresh the displayed notes
-                    alert('Note added successfully!');
-                })
-                .catch(error => {
-                    console.error("Error adding note:", error);
-                });
+                    .then(() => {
+                        viewNotes(); // Refresh the displayed notes
+                        alert('Note added successfully!');
+                    })
+                    .catch(error => {
+                        console.error("Error adding note:", error);
+                    });
             }
         }
 
@@ -122,5 +120,3 @@
 
 </body>
 </html>
-
-
