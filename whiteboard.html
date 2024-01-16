@@ -50,14 +50,17 @@
     </div>
 
     <script>
-        const notesPath = "https://raw.githubusercontent.com/mauricio5070/mauricio5070.github.io/main/notes.txt";
+        const repoOwner = "mauricio5070";
+        const repoName = "mauricio5070.github.io";
+        const pathToFile = "notes.txt";
+        const rawURL = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${pathToFile}`;
 
         let authenticated = false;
 
         function authenticate() {
             const enteredPasscode = document.getElementById("passcode").value;
 
-            if (enteredPasscode === "q2w3e4") {
+            if (enteredPasscode === "q1w2e3") {
                 document.getElementById("authentication-form").style.display = "none";
                 document.getElementById("notes-list").style.display = "block";
                 authenticated = true;
@@ -73,7 +76,7 @@
                 return;
             }
 
-            fetch(notesPath)
+            fetch(rawURL)
                 .then(response => response.text())
                 .then(data => {
                     const notes = data.split("\n").filter(note => note.trim() !== "");
@@ -92,8 +95,8 @@
 
             const note = prompt('Enter your note:');
             if (note !== null && note.trim() !== '') {
-                fetch(notesPath, {
-                    method: 'POST',
+                fetch(rawURL, {
+                    method: 'PUT',
                     body: note.trim(),
                 })
                 .then(() => {
@@ -106,29 +109,13 @@
             }
         }
 
-        function editNote() {
-            if (!authenticated) {
-                alert("Please login to edit notes.");
-                return;
-            }
-
-            // Similar logic for editing note using prompt
-        }
-
-        function deleteNote() {
-            if (!authenticated) {
-                alert("Please login to delete notes.");
-                return;
-            }
-
-            // Similar logic for deleting note using prompt
-        }
+        // Similar logic for editNote and deleteNote
 
         function renderNotes(container, notes) {
             container.innerHTML = '';
             notes.forEach((note, index) => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `${index}: ${note}`;
+                listItem.textContent = `${index + 1}: ${note}`;
                 container.appendChild(listItem);
             });
         }
@@ -136,3 +123,4 @@
 
 </body>
 </html>
+
