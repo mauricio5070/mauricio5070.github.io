@@ -50,17 +50,14 @@
     </div>
 
     <script>
-        const repoOwner = "mauricio5070";
-        const repoName = "mauricio5070.github.io";
-        const pathToFile = "notes.txt";
-        const rawURL = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${pathToFile}`;
+        const notesPath = "https://raw.githubusercontent.com/mauricio5070/mauricio5070.github.io/main/notes.txt";
 
         let authenticated = false;
 
         function authenticate() {
             const enteredPasscode = document.getElementById("passcode").value;
 
-            if (enteredPasscode === "q1w2e3") {
+            if (enteredPasscode === "q2w3e4) {
                 document.getElementById("authentication-form").style.display = "none";
                 document.getElementById("notes-list").style.display = "block";
                 authenticated = true;
@@ -76,7 +73,7 @@
                 return;
             }
 
-            fetch(rawURL)
+            fetch(notesPath)
                 .then(response => response.text())
                 .then(data => {
                     const notes = data.split("\n").filter(note => note.trim() !== "");
@@ -95,7 +92,7 @@
 
             const note = prompt('Enter your note:');
             if (note !== null && note.trim() !== '') {
-                fetch(rawURL, {
+                fetch(notesPath, {
                     method: 'PUT',
                     body: note.trim(),
                 })
@@ -123,4 +120,3 @@
 
 </body>
 </html>
-
