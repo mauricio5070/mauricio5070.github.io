@@ -50,14 +50,18 @@
     </div>
 
     <script>
-        const notesPath = "https://raw.githubusercontent.com/mauricio5070/mauricio5070.github.io/main/notes.txt";
+        const githubToken = "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";
+        const gistId = "907ac201c050310bba2b1129fbba4be5";
+        const headers = {
+            "Authorization": `token ${githubToken}`,
+        };
 
         let authenticated = false;
 
         function authenticate() {
             const enteredPasscode = document.getElementById("passcode").value;
 
-            if (enteredPasscode === "q2w3e4) {
+            if (enteredPasscode === "a11b12c13") {
                 document.getElementById("authentication-form").style.display = "none";
                 document.getElementById("notes-list").style.display = "block";
                 authenticated = true;
@@ -73,10 +77,10 @@
                 return;
             }
 
-            fetch(notesPath)
-                .then(response => response.text())
+            fetch(`https://api.github.com/gists/${gistId}`, { headers })
+                .then(response => response.json())
                 .then(data => {
-                    const notes = data.split("\n").filter(note => note.trim() !== "");
+                    const notes = atob(data.files['notes.txt'].content).split("\n").filter(note => note.trim() !== "");
                     renderNotes(document.getElementById('notes'), notes);
                 })
                 .catch(error => {
@@ -92,9 +96,16 @@
 
             const note = prompt('Enter your note:');
             if (note !== null && note.trim() !== '') {
-                fetch(notesPath, {
-                    method: 'PUT',
-                    body: note.trim(),
+                fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'PATCH',
+                    headers,
+                    body: JSON.stringify({
+                        files: {
+                            'notes.txt': {
+                                content: btoa(`${note.trim()}\n`),
+                            },
+                        },
+                    }),
                 })
                 .then(() => {
                     viewNotes(); // Refresh the displayed notes
