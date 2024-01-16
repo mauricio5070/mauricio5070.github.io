@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>White Board</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #login-form, #white-board {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-form">
+        <h2>Login to White Board</h2>
+        <input type="password" id="passcode" placeholder="Enter Passcode" />
+        <button onclick="authenticate()">Login</button>
+    </div>
+
+    <div id="white-board">
+        <h2>White Board</h2>
+        <textarea id="note-content" placeholder="Type your notes here"></textarea>
+        <br>
+        <button onclick="saveNote()">Save Note</button>
+        <button onclick="deleteNote()">Delete Note</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        const correctPasscode = "your_secret_passcode"; // Change this to your desired passcode
+        const databaseFileName = "database.txt";
+        let notes;
+
+        function authenticate() {
+            const enteredPasscode = document.getElementById("passcode").value;
+
+            if (enteredPasscode === correctPasscode) {
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("white-board").style.display = "block";
+                loadNotes(); // Load existing notes if any
+            } else {
+                alert("Incorrect passcode. Please try again.");
+            }
+        }
+
+        function saveNote() {
+            const noteContent = document.getElementById("note-content").value;
+            notes.push(noteContent);
+            saveNotes();
+            alert("Note saved successfully!");
+        }
+
+        function loadNotes() {
+            fetch(databaseFileName)
+                .then(response => response.text())
+                .then(data => {
+                    notes = data.split("*-------------------*").filter(note => note.trim() !== "");
+                })
+                .catch(error => {
+                    console.error("Error loading notes:", error);
+                    notes = [];
+                });
+        }
+
+        function saveNotes() {
+            const notesText = notes.join("\n*-------------------*\n");
+            const blob = new Blob([notesText], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = databaseFileName;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function deleteNote() {
+            notes.pop(); // Remove the last note
+            saveNotes();
+            alert("Note deleted successfully!");
+        }
+
+        function logout() {
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("white-board").style.display = "none";
+            document.getElementById("passcode").value = "";
+        }
+    </script>
+
+</body>
+</html>
