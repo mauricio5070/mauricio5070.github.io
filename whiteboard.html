@@ -40,6 +40,7 @@
 
     <script>
         const gistId = "907ac201c050310bba2b1129fbba4be5";
+        const githubToken = "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";
         let authenticated = false;
 
         function authenticate() {
@@ -61,9 +62,10 @@
                 return;
             }
 
-            fetch(`https://api.github.com/gists/${gistId}`)
+            fetch(`https://api.github.com/gists/${gistId}`, { headers: { "Authorization": `token ${githubToken}` } })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data); // Log the response for debugging
                     const notes = atob(data.files['notes.txt'].content).split("\n").filter(note => note.trim() !== "");
                     renderNotes(document.getElementById('notes'), notes);
                 })
@@ -83,7 +85,7 @@
                 fetch(`https://api.github.com/gists/${gistId}`, {
                     method: 'PATCH',
                     headers: {
-                        "Authorization": "token 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",
+                        "Authorization": `token ${githubToken}`,
                     },
                     body: JSON.stringify({
                         files: {
@@ -93,7 +95,12 @@
                         },
                     }),
                 })
-                .then(() => {
+                .then(response => {
+                    console.log(response); // Log the response for debugging
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data); // Log the response data for debugging
                     viewNotes(); // Refresh the displayed notes
                     alert('Note added successfully!');
                 })
@@ -115,4 +122,5 @@
 
 </body>
 </html>
+
 
