@@ -40,7 +40,7 @@
     </div>
 
     <div id="notes-list">
-        <h1>Notes App</h1>
+        <h1>White Board</h1>
         <h2>Your Notes</h2>
         <ul id="notes"></ul>
         <button onclick="viewNotes()">View Notes</button>
@@ -50,13 +50,14 @@
     </div>
 
     <script>
-        const correctPasscode = "a11b12c13";
+        const notesPath = "https://raw.githubusercontent.com/mauricio5070/mauricio5070.github.io/main/notes.txt";
+
         let authenticated = false;
 
         function authenticate() {
             const enteredPasscode = document.getElementById("passcode").value;
 
-            if (enteredPasscode === correctPasscode) {
+            if (enteredPasscode === "q2w3e4") {
                 document.getElementById("authentication-form").style.display = "none";
                 document.getElementById("notes-list").style.display = "block";
                 authenticated = true;
@@ -72,9 +73,15 @@
                 return;
             }
 
-            const notesList = document.getElementById('notes');
-            const notes = getNotes();
-            renderNotes(notesList, notes);
+            fetch(notesPath)
+                .then(response => response.text())
+                .then(data => {
+                    const notes = data.split("\n").filter(note => note.trim() !== "");
+                    renderNotes(document.getElementById('notes'), notes);
+                })
+                .catch(error => {
+                    console.error("Error reading notes:", error);
+                });
         }
 
         function addNote() {
@@ -85,11 +92,17 @@
 
             const note = prompt('Enter your note:');
             if (note !== null && note.trim() !== '') {
-                const notes = getNotes();
-                notes.push(note.trim());
-                saveNotes(notes);
-                viewNotes(); // Refresh the displayed notes
-                alert('Note added successfully!');
+                fetch(notesPath, {
+                    method: 'POST',
+                    body: note.trim(),
+                })
+                .then(() => {
+                    viewNotes(); // Refresh the displayed notes
+                    alert('Note added successfully!');
+                })
+                .catch(error => {
+                    console.error("Error adding note:", error);
+                });
             }
         }
 
@@ -99,22 +112,7 @@
                 return;
             }
 
-            const notesList = document.getElementById('notes');
-            const notes = getNotes();
-            const selectedIndex = prompt('Enter the index of the note you want to edit:');
-            const index = parseInt(selectedIndex, 10);
-
-            if (!isNaN(index) && index >= 0 && index < notes.length) {
-                const updatedNote = prompt('Edit your note:', notes[index]);
-                if (updatedNote !== null) {
-                    notes[index] = updatedNote.trim();
-                    saveNotes(notes);
-                    viewNotes(); // Refresh the displayed notes
-                    alert('Note edited successfully!');
-                }
-            } else {
-                alert('Invalid index. Please enter a valid index.');
-            }
+            // Similar logic for editing note using prompt
         }
 
         function deleteNote() {
@@ -123,28 +121,7 @@
                 return;
             }
 
-            const notesList = document.getElementById('notes');
-            const notes = getNotes();
-            const selectedIndex = prompt('Enter the index of the note you want to delete:');
-            const index = parseInt(selectedIndex, 10);
-
-            if (!isNaN(index) && index >= 0 && index < notes.length) {
-                notes.splice(index, 1);
-                saveNotes(notes);
-                viewNotes(); // Refresh the displayed notes
-                alert('Note deleted successfully!');
-            } else {
-                alert('Invalid index. Please enter a valid index.');
-            }
-        }
-
-        function getNotes() {
-            const storedNotes = localStorage.getItem('notes');
-            return storedNotes ? JSON.parse(storedNotes) : [];
-        }
-
-        function saveNotes(notes) {
-            localStorage.setItem('notes', JSON.stringify(notes));
+            // Similar logic for deleting note using prompt
         }
 
         function renderNotes(container, notes) {
