@@ -1,7 +1,17 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White Board</title>
+
+    <!-- Back to Index Button -->
+    <div class="back-button">
+        <a href="index.html">
+            <button>&larr; Home</button>
+        </a>
+    </div>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -9,90 +19,141 @@
             padding: 20px;
         }
 
-        #login-form, #white-board {
-            display: none;
+        #notes-list {
+            text-align: left;
+            max-width: 400px;
+            margin: 20px auto;
+            display: none; /* Hidden by default until authenticated */
+        }
+
+        #authentication-form {
+            display: block; /* Visible by default */
         }
     </style>
 </head>
 <body>
 
-    <div id="login-form">
-        <h2>Login to White Board</h2>
+    <div id="authentication-form">
+        <h2>Enter Passcode to Access Notes</h2>
         <input type="password" id="passcode" placeholder="Enter Passcode" />
         <button onclick="authenticate()">Login</button>
     </div>
 
-    <div id="white-board">
-        <h2>White Board</h2>
-        <textarea id="note-content" placeholder="Type your notes here"></textarea>
-        <br>
-        <button onclick="saveNote()">Save Note</button>
+    <div id="notes-list">
+        <h1>Notes App</h1>
+        <h2>Your Notes</h2>
+        <ul id="notes"></ul>
+        <button onclick="viewNotes()">View Notes</button>
+        <button onclick="addNote()">Add Note</button>
+        <button onclick="editNote()">Edit Note</button>
         <button onclick="deleteNote()">Delete Note</button>
-        <button onclick="logout()">Logout</button>
     </div>
 
     <script>
-        const correctPasscode = "your_secret_passcode"; // Change this to your desired passcode
-        const databaseFileName = "database.txt";
-        let notes;
+        const correctPasscode = "a11b12c13";
+        let authenticated = false;
 
         function authenticate() {
             const enteredPasscode = document.getElementById("passcode").value;
 
             if (enteredPasscode === correctPasscode) {
-                document.getElementById("login-form").style.display = "none";
-                document.getElementById("white-board").style.display = "block";
-                loadNotes(); // Load existing notes if any
+                document.getElementById("authentication-form").style.display = "none";
+                document.getElementById("notes-list").style.display = "block";
+                authenticated = true;
+                viewNotes(); // Load existing notes if any
             } else {
                 alert("Incorrect passcode. Please try again.");
             }
         }
 
-        function saveNote() {
-            const noteContent = document.getElementById("note-content").value;
-            notes.push(noteContent);
-            saveNotes();
-            alert("Note saved successfully!");
+        function viewNotes() {
+            if (!authenticated) {
+                alert("Please login to view notes.");
+                return;
+            }
+
+            const notesList = document.getElementById('notes');
+            const notes = getNotes();
+            renderNotes(notesList, notes);
         }
 
-        function loadNotes() {
-            fetch(databaseFileName)
-                .then(response => response.text())
-                .then(data => {
-                    notes = data.split("*-------------------*").filter(note => note.trim() !== "");
-                })
-                .catch(error => {
-                    console.error("Error loading notes:", error);
-                    notes = [];
-                });
+        function addNote() {
+            if (!authenticated) {
+                alert("Please login to add notes.");
+                return;
+            }
+
+            const note = prompt('Enter your note:');
+            if (note !== null && note.trim() !== '') {
+                const notes = getNotes();
+                notes.push(note.trim());
+                saveNotes(notes);
+                viewNotes(); // Refresh the displayed notes
+                alert('Note added successfully!');
+            }
         }
 
-        function saveNotes() {
-            const notesText = notes.join("\n*-------------------*\n");
-            const blob = new Blob([notesText], { type: "text/plain" });
-            const url = URL.createObjectURL(blob);
+        function editNote() {
+            if (!authenticated) {
+                alert("Please login to edit notes.");
+                return;
+            }
 
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = databaseFileName;
+            const notesList = document.getElementById('notes');
+            const notes = getNotes();
+            const selectedIndex = prompt('Enter the index of the note you want to edit:');
+            const index = parseInt(selectedIndex, 10);
 
-            document.body.appendChild(a);
-            a.click();
-
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            if (!isNaN(index) && index >= 0 && index < notes.length) {
+                const updatedNote = prompt('Edit your note:', notes[index]);
+                if (updatedNote !== null) {
+                    notes[index] = updatedNote.trim();
+                    saveNotes(notes);
+                    viewNotes(); // Refresh the displayed notes
+                    alert('Note edited successfully!');
+                }
+            } else {
+                alert('Invalid index. Please enter a valid index.');
+            }
         }
 
         function deleteNote() {
-            notes.pop(); // Remove the last note
-            saveNotes();
-            alert("Note deleted successfully!");
+            if (!authenticated) {
+                alert("Please login to delete notes.");
+                return;
+            }
+
+            const notesList = document.getElementById('notes');
+            const notes = getNotes();
+            const selectedIndex = prompt('Enter the index of the note you want to delete:');
+            const index = parseInt(selectedIndex, 10);
+
+            if (!isNaN(index) && index >= 0 && index < notes.length) {
+                notes.splice(index, 1);
+                saveNotes(notes);
+                viewNotes(); // Refresh the displayed notes
+                alert('Note deleted successfully!');
+            } else {
+                alert('Invalid index. Please enter a valid index.');
+            }
         }
 
-        function logout() {
-            document.getElementById("login-form").style.display = "block";
-            document.getElementById("white-board").style.display = "none";
-            document.getElementById("passcode").value = "";
+        function getNotes() {
+            const storedNotes = localStorage.getItem('notes');
+            return storedNotes ? JSON.parse(storedNotes) : [];
+        }
+
+        function saveNotes(notes) {
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function renderNotes(container, notes) {
+            container.innerHTML = '';
+            notes.forEach((note, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${index}: ${note}`;
+                container.appendChild(listItem);
+            });
         }
     </script>
 
