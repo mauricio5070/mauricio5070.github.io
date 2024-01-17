@@ -36,6 +36,44 @@
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
+import os
+import numpy as np
+import pandas as pd
+from sklearn.externals import joblib  # Use joblib for saving/loading models
+
+# Function to read HTML content from files in a folder
+def read_html_files(folder):
+    file_contents = []
+    file_paths = []
+
+    for filename in os.listdir(folder):
+        filepath = os.path.join(folder, filename)
+        with open(filepath, 'r', encoding='utf-8') as file:
+            file_contents.append(file.read())
+            file_paths.append(filepath)
+
+    return file_contents, file_paths
+
+# Load the saved model
+model_filename = 'best_model.pkl'
+loaded_model = joblib.load(model_filename)
+
+# Read new HTML files for classification
+new_files_contents, new_files_paths = read_html_files('html_files/New')
+
+# Predictions on the new data
+new_files_predictions = loaded_model.predict(new_files_contents)
+
+# Extract website names from file paths
+new_files_website_names = [os.path.splitext(os.path.basename(path))[0] for path in new_files_paths]
+
+# Create a DataFrame with predictions
+results_df = pd.DataFrame({'Website': new_files_website_names, 'Predicted Label': new_files_predictions})
+
+# Save predictions to an Excel file
+excel_filename = 'predictions_results.xlsx'
+results_df.to_excel(excel_filename, index=False)
+print(f"Predictions saved to {excel_filename}")
 
     
     
