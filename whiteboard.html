@@ -35,8 +35,32 @@
         <h1>White Board</h1>
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
-    
+    import os
+import pandas as pd
+from datetime import datetime
 
+def add_week_column(file_path):
+    # Load the data frame
+    df = pd.read_csv(file_path)
+
+    # Add a new column with the current week number
+    df['Week_Number'] = datetime.now().isocalendar()[1]
+
+    # Save the modified data frame back to the file
+    df.to_csv(file_path, index=False)
+
+# Specify the directory containing your files
+directory_path = '/path/to/your/files/'
+
+# Loop through each file in the directory
+for filename in os.listdir(directory_path):
+    if filename.endswith('.csv'):  # Adjust the file extension if needed
+        file_path = os.path.join(directory_path, filename)
+        add_week_column(file_path)
+
+
+
+        
 
     
     
