@@ -36,49 +36,12 @@
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
-import requests
-from bs4 import BeautifulSoup
 
-def has_shopping_cart(url):
-    try:
-        HEADERS = {'User-Agent': "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"}
-        response = requests.get(url, headers=HEADERS, timeout=30, verify=False)
-        response.raise_for_status()
-
-        # Use BeautifulSoup to parse HTML
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        words_to_check = ['cart', 'basket', 'checkout']  # Add more relevant words as needed
-        words_to_avoid = ['outofstock', 'soldout', 'unavailable']  # Add words to avoid
-
-        # Check if any of the words to avoid are present in the HTML content
-        if any(word.lower() in response.text.lower() for word in words_to_avoid):
-            return {'EFX_WEB': url, 'is_ecommerce': False, 'reason': 'Words to avoid found'}
-
-        # Check if any of the words are present in the HTML content
-        shopping_cart_elements = any(word.lower() in response.text.lower() for word in words_to_check)
-        found_word = next((word for word in words_to_check if word.lower() in response.text.lower()), None)
-
-        print(f"Found Word: {found_word}")
-
-        return {'EFX_WEB': url, 'is_ecommerce': bool(shopping_cart_elements), 'found_word': found_word}
-    except Exception as e:
-        print(f"Error: {e}")
-        return {'EFX_WEB': url, 'error': str(e)}
-
-# Example usage
-url_to_check = 'https://example.com'
-result = has_shopping_cart(url_to_check)
-print(result)
 
 
 
         
 
-    
-    
-
-    
     
     
     
