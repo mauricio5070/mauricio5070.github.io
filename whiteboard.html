@@ -36,15 +36,59 @@
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
+import pandas as pd
+from bs4 import BeautifulSoup
+import requests
+from langdetect import detect
+from googlesearch import search
+
+def get_contact_info(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Extracting address, email, and phone numbers based on HTML structure
+    address = soup.find('address').get_text() if soup.find('address') else None
+    email = soup.find('a', {'href': 'mailto:'}).get_text() if soup.find('a', {'href': 'mailto:'}) else None
+    phone = soup.find('a', {'href': 'tel:'}).get_text() if soup.find('a', {'href': 'tel:'}) else None
+
+    return {'address': address, 'email': email, 'phone': phone}
+
+def process_websites(input_csv, output_csv):
+    df = pd.read_csv(input_csv)
+
+    for index, row in df.iterrows():
+        website_url = row['EFX_WEB']
+
+        # Language detection
+        try:
+            language = detect(website_url)
+        except:
+            language = 'unknown'
+
+        # Google search if necessary
+        if language not in ['en', 'es', 'fr', 'ca']:
+            try:
+                search_query = f'site:{website_url} contact information'
+                search_results = list(search(search_query, num=1, stop=1))
+                website_url = search_results[0] if search_results else website_url
+            except:
+                pass
+
+        # Retrieve contact info and update DataFrame
+        contact_info = get_contact_info(website_url)
+        df.at[index, 'Address'] = contact_info.get('address', '')
+        df.at[index, 'Email'] = contact_info.get('email', '')
+        df.at[index, 'Phone'] = contact_info.get('phone', '')
+
+    # Save updated DataFrame to a new CSV
+    df.to_csv(output_csv, index=False)
+
+# Example usage
+input_csv_file = 'input_data.csv'
+output_csv_file = 'output_data.csv'
+process_websites(input_csv_file, output_csv_file)
 
 
-
-
-        
-
-    
-    
-    
     
     </textarea>
 <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->
