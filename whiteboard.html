@@ -36,73 +36,41 @@
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
-import pandas as pd
-from bs4 import BeautifulSoup
+import re
 import requests
-from langdetect import detect
-from googlesearch import search
-from urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
+from bs4 import BeautifulSoup
+
+HEADERS = {'User-Agent': 'Mozilla/5.0 (iPad; CPU 05 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15'}
 
 def get_contact_info(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    try:
+        response = requests.get(url, headers=HEADERS, timeout=30, verify=False)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Extracting address, email, and phone numbers based on HTML structure
-    address = soup.find('address').get_text() if soup.find('address') else None
-    email = soup.find('a', {'href': 'mailto:'}).get_text() if soup.find('a', {'href': 'mailto:'}) else None
-    phone = soup.find('a', {'href': 'tel:'}).get_text() if soup.find('a', {'href': 'tel:'}) else None
+        # Extracting address
+        address = soup.find('address').get_text() if soup.find('address') else None
 
-    return {'address': address, 'email': email, 'phone': phone}
+        # Extracting email using regular expression
+        email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+        email_match = re.search(email_pattern, response.text)
+        email = email_match.group() if email_match else None
 
-def process_websites(input_csv, output_csv):
-    df = pd.read_csv(input_csv)
+        # Extracting phone number using regular expression
+        phone_pattern = re.compile(r'\b(?:\+?(\d{1,3}))?[-. (]?\d{3}[-. )]?\d{3}[-. ]?\d{4}\b')
+        phone_match = re.search(phone_pattern, response.text)
+        phone = phone_match.group() if phone_match else None
 
-    # Configure retries with a backoff factor
-    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-    session = requests.Session()
-    adapter = HTTPAdapter(max_retries=retries)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
+        return {'address': address, 'email': email, 'phone': phone}
 
-    for index, row in df.iterrows():
-        website_url = row['EFX_WEB']
-
-        # Language detection
-        try:
-            language = detect(website_url)
-        except:
-            language = 'unknown'
-
-        # Google search if necessary
-        if language not in ['en', 'es', 'fr', 'ca']:
-            try:
-                search_query = f'site:{website_url} contact information'
-                search_results = list(search(search_query, num=1, stop=1))
-                website_url = search_results[0] if search_results else website_url
-            except:
-                pass
-
-        # Retrieve contact info with retries
-        try:
-            with session.get(website_url, timeout=5) as response:
-                response.raise_for_status()
-                contact_info = get_contact_info(website_url)
-                df.at[index, 'Address'] = contact_info.get('address', '')
-                df.at[index, 'Email'] = contact_info.get('email', '')
-                df.at[index, 'Phone'] = contact_info.get('phone', '')
-        except requests.exceptions.RequestException as e:
-            print(f"Error accessing {website_url}: {e}")
-
-    # Save updated DataFrame to a new CSV
-    df.to_csv(output_csv, index=False)
+    except requests.exceptions.RequestException as e:
+        print(f"Error accessing {url}: {e}")
+        return {'address': None, 'email': None, 'phone': None}
 
 # Example usage
-input_csv_file = 'input_data.csv'
-output_csv_file = 'output_data.csv'
-process_websites(input_csv_file, output_csv_file)
-
-    
+url = 'https://fernela.com/'
+contact_info = get_contact_info(url)
+print(contact_info)
     </textarea>
 <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->
 
