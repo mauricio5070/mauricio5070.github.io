@@ -41,6 +41,8 @@ from bs4 import BeautifulSoup
 import requests
 from langdetect import detect
 from googlesearch import search
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 def get_contact_info(url):
     response = requests.get(url)
@@ -55,6 +57,13 @@ def get_contact_info(url):
 
 def process_websites(input_csv, output_csv):
     df = pd.read_csv(input_csv)
+
+    # Configure retries with a backoff factor
+    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+    session = requests.Session()
+    adapter = HTTPAdapter(max_retries=retries)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
 
     for index, row in df.iterrows():
         website_url = row['EFX_WEB']
@@ -74,11 +83,16 @@ def process_websites(input_csv, output_csv):
             except:
                 pass
 
-        # Retrieve contact info and update DataFrame
-        contact_info = get_contact_info(website_url)
-        df.at[index, 'Address'] = contact_info.get('address', '')
-        df.at[index, 'Email'] = contact_info.get('email', '')
-        df.at[index, 'Phone'] = contact_info.get('phone', '')
+        # Retrieve contact info with retries
+        try:
+            with session.get(website_url, timeout=5) as response:
+                response.raise_for_status()
+                contact_info = get_contact_info(website_url)
+                df.at[index, 'Address'] = contact_info.get('address', '')
+                df.at[index, 'Email'] = contact_info.get('email', '')
+                df.at[index, 'Phone'] = contact_info.get('phone', '')
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing {website_url}: {e}")
 
     # Save updated DataFrame to a new CSV
     df.to_csv(output_csv, index=False)
@@ -87,7 +101,6 @@ def process_websites(input_csv, output_csv):
 input_csv_file = 'input_data.csv'
 output_csv_file = 'output_data.csv'
 process_websites(input_csv_file, output_csv_file)
-
 
     
     </textarea>
