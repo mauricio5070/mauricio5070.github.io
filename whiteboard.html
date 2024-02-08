@@ -36,41 +36,29 @@
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
-import re
-import requests
 from bs4 import BeautifulSoup
 
-HEADERS = {'User-Agent': 'Mozilla/5.0 (iPad; CPU 05 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15'}
+def extract_footer(html_content):
+    soup = BeautifulSoup(html_content, 'html.parser')
 
-def get_contact_info(url):
-    try:
-        response = requests.get(url, headers=HEADERS, timeout=30, verify=False)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
+    # Locate the footer by its tag (e.g., <footer>)
+    footer_element = soup.find('footer')
 
-        # Extracting address
-        address = soup.find('address').get_text() if soup.find('address') else None
-
-        # Extracting email using regular expression
-        email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
-        email_match = re.search(email_pattern, response.text)
-        email = email_match.group() if email_match else None
-
-        # Extracting phone number using regular expression
-        phone_pattern = re.compile(r'\b(?:\+?(\d{1,3}))?[-. (]?\d{3}[-. )]?\d{3}[-. ]?\d{4}\b')
-        phone_match = re.search(phone_pattern, response.text)
-        phone = phone_match.group() if phone_match else None
-
-        return {'address': address, 'email': email, 'phone': phone}
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error accessing {url}: {e}")
-        return {'address': None, 'email': None, 'phone': None}
+    if footer_element:
+        # Extract the text content of the footer
+        footer_text = footer_element.get_text()
+        return footer_text
+    else:
+        return None
 
 # Example usage
-url = 'https://fernela.com/'
-contact_info = get_contact_info(url)
-print(contact_info)
+html_content = '<html><body><header>Header Content</header><main>Main Content</main><footer>Footer Content</footer></body></html>'
+footer_content = extract_footer(html_content)
+
+if footer_content:
+    print(footer_content)
+else:
+    print("Footer not found in the HTML content.")
     </textarea>
 <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->
 
