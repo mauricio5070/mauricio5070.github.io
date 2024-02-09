@@ -37,19 +37,15 @@
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
 def extract_address(text):
-    # Regular expression for extracting addresses
-    address_pattern = re.compile(r'\b\d{1,5}\s+\w[^@]*\b')
-    address_match = re.search(address_pattern, text)
-    address = address_match.group() if address_match else None
-    return address
+    # Use usaddress to parse the address
+    parsed_address, address_type = usaddress.tag(text)
 
-def extract_phone_numbers(text):
-    # Regular expression for extracting phone numbers
-    phone_pattern = re.compile(r'\b(?:\+?(\d{1,3}))?[-. (]?\d{9}[-. )]?\b')
-    phone_matches = re.findall(phone_pattern, text)
-    phones = [match for match in phone_matches if match]
-    return phones
-    </textarea>
+    # Check if the address type is 'StreetAddress' and format the address
+    if 'StreetAddress' in address_type:
+        formatted_address = ' '.join([parsed_address.get(key, '') for key in ['AddressNumber', 'StreetNamePreDirectional', 'StreetName', 'StreetNamePostType']])
+        return formatted_address.strip()
+    else:
+        return None
 <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->
 
     </div>
