@@ -35,17 +35,83 @@
         <h1>White Board</h1>
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
-    
-def extract_address(text):
-    # Use usaddress to parse the address
-    parsed_address, address_type = usaddress.tag(text)
+    import yfinance as yf
+import pandas as pd
+import statsmodels.api as sm
+from datetime import datetime, timedelta
+import pickle
 
-    # Check if the address type is 'StreetAddress' and format the address
-    if 'StreetAddress' in address_type:
-        formatted_address = ' '.join([parsed_address.get(key, '') for key in ['AddressNumber', 'StreetNamePreDirectional', 'StreetName', 'StreetNamePostType']])
-        return formatted_address.strip()
-    else:
-        return None
+# List of top 30 cryptocurrencies based on market capitalization
+top_30_coins = ['BTC-USD', 'ETH-USD', 'BNB-USD', 'ADA-USD', 'SOL1-USD', 'DOT1-USD', 'XRP-USD', 'DOGE-USD',
+                'AVAX-USD', 'LUNA-USD', 'LINK-USD', 'ALGO-USD', 'MATIC-USD', 'ICP-USD', 'FIL-USD', 'ETC-USD',
+                'TRX-USD', 'ATOM-USD', 'VET-USD', 'THETA-USD', 'XLM-USD', 'UNI-USD', 'WBTC-USD', 'AAVE-USD',
+                'XTZ-USD', 'EOS-USD', 'FTT-USD', 'MIOTA-USD', 'CRO-USD']
+
+# Create an empty DataFrame to store the combined data
+combined_data = pd.DataFrame()
+
+# Loop through each symbol and fetch historical data using yfinance
+for symbol in top_30_coins:
+    df = yf.download(symbol, start=datetime.now() - timedelta(days=365 * 5), end=datetime.now(), progress=False)
+    df['symbol'] = symbol  # Add symbol column to identify the cryptocurrency
+    combined_data = pd.concat([combined_data, df], ignore_index=True)
+
+# Function to create forecast and calculate percentage difference
+def create_forecast(df, close_column_name='Close'):
+    # Check if the specified close_column_name is present
+    if close_column_name not in df.columns:
+        raise KeyError(f"No '{close_column_name}' column found in the DataFrame.")
+    
+    # Perform time series analysis using statsmodels
+    model = sm.tsa.ARIMA(df[close_column_name], order=(1, 1, 1))  # Adjust the order based on your data characteristics
+    results = model.fit()
+    
+    # Ensure the index is of type DatetimeIndex
+    df.index = pd.to_datetime(df.index)
+    
+    # Create a DataFrame for tomorrow
+    tomorrow_index = df.index[-1] + pd.DateOffset(days=1)
+    tomorrow = pd.DataFrame(index=[tomorrow_index])
+    
+    # Make a forecast for tomorrow
+    forecast_tomorrow = results.forecast(steps=1)
+    forecast_tomorrow.index = tomorrow.index
+    
+    # Extract the forecasted value for tomorrow
+    forecast_value = forecast_tomorrow.values[0]
+    
+    # Calculate today's closing price
+    today_close = df[close_column_name].iloc[-1]
+    
+    # Calculate the percentage difference between today and the forecast for tomorrow
+    percentage_difference = ((forecast_value - today_close) / today_close) * 100
+    
+    # Add columns to the DataFrame
+    df['Forecast'] = [None] * (len(df) - 1) + [forecast_value]
+    df['Percentage_Difference'] = [None] * (len(df) - 1) + [percentage_difference]
+    
+    return df, results
+
+# Create a dictionary to store models
+models = {}
+
+# Loop through each symbol and create forecasts
+for symbol in top_30_coins:
+    # Ensure the 'Close' column exists in the DataFrame
+    if 'Close' not in combined_data.columns:
+        raise KeyError("No 'Close' column found in the DataFrame.")
+
+    df_symbol = combined_data[combined_data['symbol'] == symbol][['Close']].rename(columns={'Close': 'y'})
+    df_symbol, model_symbol = create_forecast(df_symbol, close_column_name='y')
+    models[symbol] = model_symbol
+    combined_data.update(df_symbol)
+
+# Save the models to a pickle file
+with open('crypto_models.pkl', 'wb') as file:
+    pickle.dump(models, file)
+
+# Save output
+combined_data.to_csv('prediction_output.csv')
 
     </textarea>
 <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->
