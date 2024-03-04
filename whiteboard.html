@@ -113,6 +113,49 @@ with open('crypto_models.pkl', 'wb') as file:
 # Save output
 combined_data.to_csv('prediction_output.csv')
 
+
+
+# Install the library if you haven't already
+# pip install pmdarima
+
+import pandas as pd
+import pmdarima as pm
+from pmdarima.model_selection import train_test_split
+
+# Assuming you have a DataFrame with columns "Week" and "Price"
+# Replace this with your actual data loading or generation logic
+data = {
+    "Week": pd.date_range(start="2023-01-01", periods=100, freq="W"),
+    "Price": np.random.randn(100)
+}
+df = pd.DataFrame(data)
+
+# Split the data into training and testing sets
+train, test = train_test_split(df["Price"], train_size=80)
+
+# Fit an ARIMA model using auto_arima
+model = pm.auto_arima(train, seasonal=False, suppress_warnings=True)
+
+# Print the model summary
+print(model.summary())
+
+# Forecast future values
+forecast, conf_int = model.predict(n_periods=len(test), return_conf_int=True)
+
+# Create a DataFrame with the forecast results
+forecast_df = pd.DataFrame({
+    "Week": df["Week"].iloc[-len(test):],  # Match the forecasted weeks with the test set
+    "Forecast": forecast,
+    "Lower_CI": conf_int[:, 0],
+    "Upper_CI": conf_int[:, 1]
+})
+
+# Print the forecast DataFrame
+print(forecast_df)
+
+
+
+        
     </textarea>
 <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->
 
