@@ -35,123 +35,35 @@
         <h1>White Board</h1>
     <!--------------------------------------------------- Your Python code goes here -------------------------------------------------------------------------------------------------->    
     <textarea id="pythonCode" readonly rows="20" cols="80">
-    import yfinance as yf
-import pandas as pd
-import statsmodels.api as sm
-from datetime import datetime, timedelta
-import pickle
-
-# List of top 30 cryptocurrencies based on market capitalization
-top_30_coins = ['BTC-USD', 'ETH-USD', 'BNB-USD', 'ADA-USD', 'SOL1-USD', 'DOT1-USD', 'XRP-USD', 'DOGE-USD',
-                'AVAX-USD', 'LUNA-USD', 'LINK-USD', 'ALGO-USD', 'MATIC-USD', 'ICP-USD', 'FIL-USD', 'ETC-USD',
-                'TRX-USD', 'ATOM-USD', 'VET-USD', 'THETA-USD', 'XLM-USD', 'UNI-USD', 'WBTC-USD', 'AAVE-USD',
-                'XTZ-USD', 'EOS-USD', 'FTT-USD', 'MIOTA-USD', 'CRO-USD']
-
-# Create an empty DataFrame to store the combined data
-combined_data = pd.DataFrame()
-
-# Loop through each symbol and fetch historical data using yfinance
-for symbol in top_30_coins:
-    df = yf.download(symbol, start=datetime.now() - timedelta(days=365 * 5), end=datetime.now(), progress=False)
-    df['symbol'] = symbol  # Add symbol column to identify the cryptocurrency
-    combined_data = pd.concat([combined_data, df], ignore_index=True)
-
-# Function to create forecast and calculate percentage difference
-def create_forecast(df, close_column_name='Close'):
-    # Check if the specified close_column_name is present
-    if close_column_name not in df.columns:
-        raise KeyError(f"No '{close_column_name}' column found in the DataFrame.")
     
-    # Perform time series analysis using statsmodels
-    model = sm.tsa.ARIMA(df[close_column_name], order=(1, 1, 1))  # Adjust the order based on your data characteristics
-    results = model.fit()
-    
-    # Ensure the index is of type DatetimeIndex
-    df.index = pd.to_datetime(df.index)
-    
-    # Create a DataFrame for tomorrow
-    tomorrow_index = df.index[-1] + pd.DateOffset(days=1)
-    tomorrow = pd.DataFrame(index=[tomorrow_index])
-    
-    # Make a forecast for tomorrow
-    forecast_tomorrow = results.forecast(steps=1)
-    forecast_tomorrow.index = tomorrow.index
-    
-    # Extract the forecasted value for tomorrow
-    forecast_value = forecast_tomorrow.values[0]
-    
-    # Calculate today's closing price
-    today_close = df[close_column_name].iloc[-1]
-    
-    # Calculate the percentage difference between today and the forecast for tomorrow
-    percentage_difference = ((forecast_value - today_close) / today_close) * 100
-    
-    # Add columns to the DataFrame
-    df['Forecast'] = [None] * (len(df) - 1) + [forecast_value]
-    df['Percentage_Difference'] = [None] * (len(df) - 1) + [percentage_difference]
-    
-    return df, results
-
-# Create a dictionary to store models
-models = {}
-
-# Loop through each symbol and create forecasts
-for symbol in top_30_coins:
-    # Ensure the 'Close' column exists in the DataFrame
-    if 'Close' not in combined_data.columns:
-        raise KeyError("No 'Close' column found in the DataFrame.")
-
-    df_symbol = combined_data[combined_data['symbol'] == symbol][['Close']].rename(columns={'Close': 'y'})
-    df_symbol, model_symbol = create_forecast(df_symbol, close_column_name='y')
-    models[symbol] = model_symbol
-    combined_data.update(df_symbol)
-
-# Save the models to a pickle file
-with open('crypto_models.pkl', 'wb') as file:
-    pickle.dump(models, file)
-
-# Save output
-combined_data.to_csv('prediction_output.csv')
 
 
-
-# Install the library if you haven't already
-# pip install pmdarima
 
 import pandas as pd
-import pmdarima as pm
-from pmdarima.model_selection import train_test_split
 
-# Assuming you have a DataFrame with columns "Week" and "Price"
-# Replace this with your actual data loading or generation logic
-data = {
-    "Week": pd.date_range(start="2023-01-01", periods=100, freq="W"),
-    "Price": np.random.randn(100)
-}
-df = pd.DataFrame(data)
+# Replace 'your_data.csv' with the actual file path
+file_path = 'your_data.csv'
 
-# Split the data into training and testing sets
-train, test = train_test_split(df["Price"], train_size=80)
+# Read the CSV file into a DataFrame
+df = pd.read_csv(file_path)
 
-# Fit an ARIMA model using auto_arima
-model = pm.auto_arima(train, seasonal=False, suppress_warnings=True)
+# Specify the columns to extract
+selected_columns = ["Opportunity ID", "Total incremental value", "CRSS Flag", "Close Year", "Close Month", "BU/COE"]
 
-# Print the model summary
-print(model.summary())
+# Extract the specified columns into a new DataFrame
+extracted_data = df[selected_columns]
 
-# Forecast future values
-forecast, conf_int = model.predict(n_periods=len(test), return_conf_int=True)
+# Convert 'Total incremental value' column to numeric (assuming it's not already)
+extracted_data['Total incremental value'] = pd.to_numeric(extracted_data['Total incremental value'], errors='coerce')
 
-# Create a DataFrame with the forecast results
-forecast_df = pd.DataFrame({
-    "Week": df["Week"].iloc[-len(test):],  # Match the forecasted weeks with the test set
-    "Forecast": forecast,
-    "Lower_CI": conf_int[:, 0],
-    "Upper_CI": conf_int[:, 1]
-})
+# Group by 'BU/COE', 'Close Year', and 'Close Month' and calculate Standard Deviation and Average
+grouped_data = extracted_data.groupby(['BU/COE', 'Close Year', 'Close Month'])['Total incremental value'].agg(['std', 'mean']).reset_index()
 
-# Print the forecast DataFrame
-print(forecast_df)
+# Merge the grouped data back to the original DataFrame
+df_with_stats = pd.merge(extracted_data, grouped_data, on=['BU/COE', 'Close Year', 'Close Month'], how='left', suffixes=('', '_stats'))
+
+# Display the DataFrame with standard deviation and average columns
+print(df_with_stats)
 
 
 
