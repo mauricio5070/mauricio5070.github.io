@@ -37,33 +37,34 @@
     <textarea id="pythonCode" readonly rows="20" cols="80">
     
 
+import csv
 
+def process_word(word):
+    # Your function logic here
+    # Replace the following line with the actual function call and result extraction
+    result = {'efx_web': 'example', 'found_word': word, 'is_e_commerce': True, 'error': None}
+    return result
 
-import pandas as pd
+def run_and_write_to_csv(word_list, output_csv):
+    with open(output_csv, 'w', newline='') as csv_file:
+        fieldnames = ['efx_web', 'found_word', 'is_e_commerce', 'error']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
-# Replace 'your_data.csv' with the actual file path
-file_path = 'your_data.csv'
+        # Write header
+        writer.writeheader()
 
-# Read the CSV file into a DataFrame
-df = pd.read_csv(file_path)
+        for word in word_list:
+            result = process_word(word)
 
-# Specify the columns to extract
-selected_columns = ["Opportunity ID", "Total incremental value", "CRSS Flag", "Close Year", "Close Month", "BU/COE"]
+            # Add a suffix to each header
+            result_with_suffix = {f'{key}_{word}': value for key, value in result.items()}
+            writer.writerow(result_with_suffix)
 
-# Extract the specified columns into a new DataFrame
-extracted_data = df[selected_columns]
+# Example usage:
+word_list = ['example1', 'example2', 'example3']
+output_csv = 'output_data.csv'
 
-# Convert 'Total incremental value' column to numeric (assuming it's not already)
-extracted_data['Total incremental value'] = pd.to_numeric(extracted_data['Total incremental value'], errors='coerce')
-
-# Group by 'BU/COE', 'Close Year', and 'Close Month' and calculate Standard Deviation and Average
-grouped_data = extracted_data.groupby(['BU/COE', 'Close Year', 'Close Month'])['Total incremental value'].agg(['std', 'mean']).reset_index()
-
-# Merge the grouped data back to the original DataFrame
-df_with_stats = pd.merge(extracted_data, grouped_data, on=['BU/COE', 'Close Year', 'Close Month'], how='left', suffixes=('', '_stats'))
-
-# Display the DataFrame with standard deviation and average columns
-print(df_with_stats)
+run_and_write_to_csv(word_list, output_csv)
 
 
 
