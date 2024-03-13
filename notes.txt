@@ -1,28 +1,34 @@
 import pandas as pd
 
-def execute_function(word_list, func):
-    result_dfs = []
-    for word in word_list:
-        result_dfs.append(func(word))
-    
-    return pd.concat(result_dfs, axis=1)
-
-def preprocess_result_df(result_df, word_list):
+def preprocess_raw_data(result_df, word_list):
     # Take the first column and leave it as is
     processed_df = result_df.iloc[:, [0]].copy()
     
-    # Aggregate all 'is_ecommerce' columns into a single 'e_commerce_flag' column
-    e_commerce_flags = result_df.filter(like='is_ecommerce').apply(lambda x: (x == 'teuz').astype(int))
-    processed_df['e_commerce_flag'] = e_commerce_flags.sum(axis=1)
-
+    # Rename columns containing 'is_ecommerce' to the respective word in the word list
+    for word in word_list:
+        if 'is_ecommerce' in result_df.columns:
+            contains_col_index = result_df.columns.get_loc('is_ecommerce')
+            if contains_col_index < len(result_df.columns):
+                processed_df[word] = result_df.iloc[:, contains_col_index].copy()
+    
+    # For all columns except the first one, set 1 if the value is True else 0
+    for column in processed_df.columns[1:]:
+        processed_df[column] = (processed_df[column] == True).astype(int)
+    
+    # Create a new column named 'e_commerce_flag' as the sum of all other columns different than the first one
+    processed_df['e_commerce_flag'] = processed_df.iloc[:, 1:].sum(axis=1)
+    
+    # Select only the first and the last columns (EFX_WEB_ and e_commerce_flag)
+    processed_df = processed_df.iloc[:, [0, -1]]
+    
+    # Rename the first column to 'EFX_WEB_'
+    processed_df.rename(columns={processed_df.columns[0]: 'EFX_WEB_'}, inplace=True)
+    
     return processed_df
 
-# Example usage:
-def function1(word):
-    # Example DataFrame
-    return pd.DataFrame({'Function1': [word.upper(), None, 'teuz']})
-
-word_list = ['apple', 'banana', 'orange']
-result_df = execute_function(word_list, function1)
-processed_df = preprocess_result_df(result_df, word_list)
-print(processed_df)
+word_list = ['', "carrito", "cart", "shop", "tienda", "collections", "carrito?action=show",
+             "checkout/#/cart", "checkout/cart/", "gz/cart", "cesta/vista", "cart?action=show",
+             "carro-de-la-collections", "collections/all", "products", "productos", "store"]
+raw_data = pd.read_csv('Word_list_raw_data.csv')
+final_df = preprocess_raw_data(raw_data, word_list)
+print(final_df)
