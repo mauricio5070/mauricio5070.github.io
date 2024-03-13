@@ -1,11 +1,15 @@
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Calculate z-score for incremental revenue in each dataframe
-df_2023['z_score'] = (df_2023['Incremental Revenue'] - df_2023['Incremental Revenue'].mean()) / df_2023['Incremental Revenue'].std()
-df_2024['z_score'] = (df_2024['Incremental Revenue'] - df_2024['Incremental Revenue'].mean()) / df_2024['Incremental Revenue'].std()
+# Grouping and calculating z-scores for each group
+grouped_2023 = df_2023.groupby(['Close Month', 'BU', 'OPP ID', 'Close Year'])
+df_2023['z_score'] = grouped_2023['Incremental Revenue'].apply(lambda x: (x - x.mean()) / x.std())
 
-# Visualize outliers using a control chart
+grouped_2024 = df_2024.groupby(['Close Month', 'BU', 'OPP ID', 'Close Year'])
+df_2024['z_score'] = grouped_2024['Incremental Revenue'].apply(lambda x: (x - x.mean()) / x.std())
+
+# Visualizing outliers using a control chart
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 2, 1)
 sns.boxplot(y='Incremental Revenue', data=df_2023)
@@ -17,8 +21,6 @@ plt.title('2024 Incremental Revenue Control Chart')
 
 plt.show()
 
-
-
 # Remove outliers based on z-score threshold
 df_2023_clean = df_2023[df_2023['z_score'].abs() < 3]
 df_2024_clean = df_2024[df_2024['z_score'].abs() < 3]
@@ -26,4 +28,3 @@ df_2024_clean = df_2024[df_2024['z_score'].abs() < 3]
 # Remove the z-score column
 df_2023_clean = df_2023_clean.drop(columns=['z_score'])
 df_2024_clean = df_2024_clean.drop(columns=['z_score'])
-
