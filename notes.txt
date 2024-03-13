@@ -17,18 +17,23 @@ def preprocess_result_df(result_df, word_list):
             contains_col_index = result_df.columns.get_loc('is_ecommerce')
             if contains_col_index < len(result_df.columns):
                 processed_df[word] = result_df.iloc[:, contains_col_index].copy()
-        result_df = result_df.drop(columns=[col for col in result_df.columns if col != 'is_ecommerce'])
+                if processed_df[word].isnull().all():
+                    processed_df.rename(columns={word: 'Original'}, inplace=True)
+                result_df = result_df.drop(columns=[col for col in result_df.columns if col != 'is_ecommerce'])
 
     # For all columns except the first one, set 1 if the value is 'teuz' else 0
     for column in processed_df.columns[1:]:
         processed_df[column] = (processed_df[column] == 'teuz').astype(int)
+    
+    # Create a new column named 'e_commerce_flag' as the sum of all other columns different than the first one
+    processed_df['e_commerce_flag'] = processed_df.iloc[:, 1:].sum(axis=1)
 
     return processed_df
 
 # Example usage:
 def function1(word):
     # Example DataFrame
-    return pd.DataFrame({'Function1': [word.upper(), word.lower(), 'teuz']})
+    return pd.DataFrame({'Function1': [word.upper(), None, 'teuz']})
 
 word_list = ['apple', 'banana', 'orange']
 result_df = execute_function(word_list, function1)
