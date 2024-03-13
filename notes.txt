@@ -1,13 +1,27 @@
+
+The z-score is a measure of how many standard deviations a data point is from the mean of the dataset. It's calculated using the formula
+
+�
+x is the data point,
+�
+μ is the mean of the dataset, and
+�
+σ is the standard deviation of the dataset.
+The threshold of 3 for the z-score is a common heuristic used to identify outliers. A z-score of 3 means that the data point is 3 standard deviations away from the mean. In a normal distribution, approximately 99.7% of the data falls within 3 standard deviations of the mean.
+
+
+
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Grouping and calculating z-scores for each group
 grouped_2023 = df_2023.groupby(['Close Month', 'BU', 'OPP ID', 'Close Year'])
-df_2023['z_score'] = grouped_2023['Incremental Revenue'].apply(lambda x: (x - x.mean()) / x.std())
+df_2023['z_score'] = grouped_2023['Incremental Revenue'].transform(lambda x: (x - x.mean()) / x.std(ddof=0) if len(x) > 1 else 0)
 
 grouped_2024 = df_2024.groupby(['Close Month', 'BU', 'OPP ID', 'Close Year'])
-df_2024['z_score'] = grouped_2024['Incremental Revenue'].apply(lambda x: (x - x.mean()) / x.std())
+df_2024['z_score'] = grouped_2024['Incremental Revenue'].transform(lambda x: (x - x.mean()) / x.std(ddof=0) if len(x) > 1 else 0)
 
 # Visualizing outliers using a control chart
 plt.figure(figsize=(12, 6))
@@ -28,3 +42,4 @@ df_2024_clean = df_2024[df_2024['z_score'].abs() < 3]
 # Remove the z-score column
 df_2023_clean = df_2023_clean.drop(columns=['z_score'])
 df_2024_clean = df_2024_clean.drop(columns=['z_score'])
+
