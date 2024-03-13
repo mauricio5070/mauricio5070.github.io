@@ -11,22 +11,9 @@ def preprocess_result_df(result_df, word_list):
     # Take the first column and leave it as is
     processed_df = result_df.iloc[:, [0]].copy()
     
-    # Rename columns containing 'is_ecommerce' to the respective word in the word list
-    for word in word_list:
-        if 'is_ecommerce' in result_df.columns:
-            contains_col_index = result_df.columns.get_loc('is_ecommerce')
-            if contains_col_index < len(result_df.columns):
-                processed_df[word] = result_df.iloc[:, contains_col_index].copy()
-                if processed_df[word].isnull().all():
-                    processed_df.rename(columns={word: 'Original'}, inplace=True)
-                result_df = result_df.drop(columns=[col for col in result_df.columns if col != 'is_ecommerce'])
-
-    # For all columns except the first one, set 1 if the value is 'teuz' else 0
-    for column in processed_df.columns[1:]:
-        processed_df[column] = (processed_df[column] == 'teuz').astype(int)
-    
-    # Create a new column named 'e_commerce_flag' as the sum of all other columns different than the first one
-    processed_df['e_commerce_flag'] = processed_df.iloc[:, 1:].sum(axis=1)
+    # Aggregate all 'is_ecommerce' columns into a single 'e_commerce_flag' column
+    e_commerce_flags = result_df.filter(like='is_ecommerce').apply(lambda x: (x == 'teuz').astype(int))
+    processed_df['e_commerce_flag'] = e_commerce_flags.sum(axis=1)
 
     return processed_df
 
