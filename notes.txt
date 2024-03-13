@@ -11,12 +11,13 @@ def preprocess_result_df(result_df, word_list):
     # Take the first column and leave it as is
     processed_df = result_df.iloc[:, [0]].copy()
     
-    # Rename columns named 'is_ecommerce' to 'contains'
-    if 'is_ecommerce' in result_df.columns:
-        processed_df.rename(columns={'is_ecommerce': 'contains'}, inplace=True)
-    
-    # Drop all other columns
-    processed_df.drop(columns=[col for col in result_df.columns if col != 'is_ecommerce'], inplace=True)
+    # Rename columns containing 'is_ecommerce' to the respective word in the word list
+    for word in word_list:
+        if 'is_ecommerce' in result_df.columns:
+            contains_col_index = result_df.columns.get_loc('is_ecommerce')
+            if contains_col_index < len(result_df.columns):
+                processed_df[word] = result_df.iloc[:, contains_col_index].copy()
+        result_df = result_df.drop(columns=[col for col in result_df.columns if col != 'is_ecommerce'])
 
     # For all columns except the first one, set 1 if the value is 'teuz' else 0
     for column in processed_df.columns[1:]:
