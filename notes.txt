@@ -9,6 +9,11 @@ x is the data point,
 σ is the standard deviation of the dataset.
 The threshold of 3 for the z-score is a common heuristic used to identify outliers. A z-score of 3 means that the data point is 3 standard deviations away from the mean. In a normal distribution, approximately 99.7% of the data falls within 3 standard deviations of the mean.
 
+# For dataframe df_2023
+filtered_df_2023 = df_2023[df_2023['CRSS FLAG'] == 1]
+
+# For dataframe df_2024
+filtered_df_2024 = df_2024[df_2024['CRSS FLAG'] == 1]
 
 
 
