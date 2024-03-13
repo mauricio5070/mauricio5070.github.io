@@ -1,34 +1,29 @@
-import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-def preprocess_raw_data(result_df, word_list):
-    # Take the first column and leave it as is
-    processed_df = result_df.iloc[:, [0]].copy()
-    
-    # Rename columns containing 'is_ecommerce' to the respective word in the word list
-    for word in word_list:
-        if 'is_ecommerce' in result_df.columns:
-            contains_col_index = result_df.columns.get_loc('is_ecommerce')
-            if contains_col_index < len(result_df.columns):
-                processed_df[word] = result_df.iloc[:, contains_col_index].copy()
-    
-    # For all columns except the first one, set 1 if the value is True else 0
-    for column in processed_df.columns[1:]:
-        processed_df[column] = (processed_df[column] == True).astype(int)
-    
-    # Create a new column named 'e_commerce_flag' as the sum of all other columns different than the first one
-    processed_df['e_commerce_flag'] = processed_df.iloc[:, 1:].sum(axis=1)
-    
-    # Select only the first and the last columns (EFX_WEB_ and e_commerce_flag)
-    processed_df = processed_df.iloc[:, [0, -1]]
-    
-    # Rename the first column to 'EFX_WEB_'
-    processed_df.rename(columns={processed_df.columns[0]: 'EFX_WEB_'}, inplace=True)
-    
-    return processed_df
+# Calculate z-score for incremental revenue in each dataframe
+df_2023['z_score'] = (df_2023['Incremental Revenue'] - df_2023['Incremental Revenue'].mean()) / df_2023['Incremental Revenue'].std()
+df_2024['z_score'] = (df_2024['Incremental Revenue'] - df_2024['Incremental Revenue'].mean()) / df_2024['Incremental Revenue'].std()
 
-word_list = ['', "carrito", "cart", "shop", "tienda", "collections", "carrito?action=show",
-             "checkout/#/cart", "checkout/cart/", "gz/cart", "cesta/vista", "cart?action=show",
-             "carro-de-la-collections", "collections/all", "products", "productos", "store"]
-raw_data = pd.read_csv('Word_list_raw_data.csv')
-final_df = preprocess_raw_data(raw_data, word_list)
-print(final_df)
+# Visualize outliers using a control chart
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+sns.boxplot(y='Incremental Revenue', data=df_2023)
+plt.title('2023 Incremental Revenue Control Chart')
+
+plt.subplot(1, 2, 2)
+sns.boxplot(y='Incremental Revenue', data=df_2024)
+plt.title('2024 Incremental Revenue Control Chart')
+
+plt.show()
+
+
+
+# Remove outliers based on z-score threshold
+df_2023_clean = df_2023[df_2023['z_score'].abs() < 3]
+df_2024_clean = df_2024[df_2024['z_score'].abs() < 3]
+
+# Remove the z-score column
+df_2023_clean = df_2023_clean.drop(columns=['z_score'])
+df_2024_clean = df_2024_clean.drop(columns=['z_score'])
+
