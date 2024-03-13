@@ -1,50 +1,26 @@
-
-The z-score is a measure of how many standard deviations a data point is from the mean of the dataset. It's calculated using the formula
-
-�
-x is the data point,
-�
-μ is the mean of the dataset, and
-�
-σ is the standard deviation of the dataset.
-The threshold of 3 for the z-score is a common heuristic used to identify outliers. A z-score of 3 means that the data point is 3 standard deviations away from the mean. In a normal distribution, approximately 99.7% of the data falls within 3 standard deviations of the mean.
-
-# For dataframe df_2023
-filtered_df_2023 = df_2023[df_2023['CRSS FLAG'] == 1]
-
-# For dataframe df_2024
-filtered_df_2024 = df_2024[df_2024['CRSS FLAG'] == 1]
-
-
-
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+from pmdarima.arima import auto_arima
 
-# Grouping and calculating z-scores for each group
-grouped_2023 = df_2023.groupby(['Close Month', 'BU', 'OPP ID', 'Close Year'])
-df_2023['z_score'] = grouped_2023['Incremental Revenue'].transform(lambda x: (x - x.mean()) / x.std(ddof=0) if len(x) > 1 else 0)
+# Assuming df_2023_clean is your cleaned dataframe containing data for 2023
+# Assuming 'Total Incremental Revenue' is the column to forecast
+# Assuming 'Close Month', 'BU/COE', and 'Close Year' are the columns representing time periods
 
-grouped_2024 = df_2024.groupby(['Close Month', 'BU', 'OPP ID', 'Close Year'])
-df_2024['z_score'] = grouped_2024['Incremental Revenue'].transform(lambda x: (x - x.mean()) / x.std(ddof=0) if len(x) > 1 else 0)
+# Grouping the data by 'Close Month', 'BU/COE', and 'Close Year' and aggregating the total incremental revenue
+grouped_df_2023_clean = df_2023_clean.groupby(['Close Month', 'BU/COE', 'Close Year']).agg({'Total Incremental Revenue': 'sum'}).reset_index()
 
-# Visualizing outliers using a control chart
-plt.figure(figsize=(12, 6))
-plt.subplot(1, 2, 1)
-sns.boxplot(y='Incremental Revenue', data=df_2023)
-plt.title('2023 Incremental Revenue Control Chart')
+# Pivot the dataframe to have 'Close Month' as index and 'BU/COE' as columns
+pivot_df_2023_clean = grouped_df_2023_clean.pivot(index='Close Month', columns='BU/COE', values='Total Incremental Revenue')
 
-plt.subplot(1, 2, 2)
-sns.boxplot(y='Incremental Revenue', data=df_2024)
-plt.title('2024 Incremental Revenue Control Chart')
+# Forecasting for the next year for each BU/COE using autoARIMA
+forecasts = {}
+for column in pivot_df_2023_clean.columns:
+    time_series = pivot_df_2023_clean[column]
+    model = auto_arima(time_series, seasonal=True, m=12)  # Assuming monthly seasonal pattern
+    forecast = model.predict(n_periods=12)  # Forecasting for the next 12 months
+    forecasts[column] = forecast
 
-plt.show()
+# Creating a dataframe to store the forecasts
+forecast_df = pd.DataFrame(forecasts, index=pd.date_range(start='2023-01-01', periods=12, freq='M'))
 
-# Remove outliers based on z-score threshold
-df_2023_clean = df_2023[df_2023['z_score'].abs() < 3]
-df_2024_clean = df_2024[df_2024['z_score'].abs() < 3]
-
-# Remove the z-score column
-df_2023_clean = df_2023_clean.drop(columns=['z_score'])
-df_2024_clean = df_2024_clean.drop(columns=['z_score'])
-
+# Print the forecasts for each BU/COE
+print(forecast_df)
