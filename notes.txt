@@ -3,27 +3,28 @@ from statsmodels.tsa.arima.model import ARIMA
 from pmdarima import auto_arima
 
 # Load your dataset
-data = pd.read_csv("your_data.csv")
+df = pd.read_csv("your_data.csv")
 
 # Convert 'Close Month' and 'Close Year' to datetime
-data['Close Month'] = pd.to_datetime(data['Close Month'].astype(int).astype(str) + '-' + data['Close Year'].astype(int).astype(str), format='%m-%Y')
+df['Close Month'] = pd.to_datetime(df['Close Month'].astype(int).astype(str) + '-' + df['Close Year'].astype(int).astype(str), format='%m-%Y')
 
 # Set 'Close Month' as the index
-data.set_index('Close Month', inplace=True)
+df.set_index('Close Month', inplace=True)
 
 # Recognize current year and month
-current_year = data.index[-1].year
-current_month = data.index[-1].month
+current_year = df.index[-1].year
+current_month = df.index[-1].month
 
-# Filter data for the current year
-data_current_year = data[data.index.year == current_year]
+# Filter data for the specified countries and the current year
+countries = ['AUS', 'USIS', 'CAN']
+df_current_year = df[(df.index.year == current_year) & (df['BU/COE'].isin(countries))]
 
 # Group by 'BU/COE' and resample to monthly frequency, summing 'Total Incremental Revenue'
-data_grouped = data_current_year.groupby('BU/COE')['Total Incremental Revenue'].resample('M').sum().reset_index()
+df_grouped = df_current_year.groupby('BU/COE')['Total Incremental Revenue'].resample('M').sum().reset_index()
 
 # Loop through each BU/COE
 predictions = []
-for group, df_group in data_grouped.groupby('BU/COE'):
+for group, df_group in df_grouped.groupby('BU/COE'):
     # Fit ARIMA model
     model = auto_arima(df_group['Total Incremental Revenue'], seasonal=True, m=12)
     fitted_model = model.fit(df_group['Total Incremental Revenue'])
@@ -41,7 +42,7 @@ for group, df_group in data_grouped.groupby('BU/COE'):
 predictions_df = pd.DataFrame(predictions)
 
 # Merge predictions with original data
-merged_data = pd.merge(data, predictions_df, on=['Close Month', 'BU/COE'], how='left')
+merged_data = pd.merge(df, predictions_df, on=['Close Month', 'BU/COE'], how='left')
 
-# Print merged_data with additional 'Prediction' column
-print(merged_data)
+# Output merged_data with additional 'Prediction' column
+merged_data
