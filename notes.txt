@@ -1,6 +1,5 @@
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA
-from pmdarima import auto_arima
 
 # Load your dataset
 df = pd.read_csv("your_data.csv")
@@ -25,18 +24,21 @@ df_grouped = df_current_year.groupby('BU/COE')['Total Incremental Revenue'].resa
 # Loop through each BU/COE
 predictions = []
 for group, df_group in df_grouped.groupby('BU/COE'):
-    # Fit ARIMA model
-    model = auto_arima(df_group['Total Incremental Revenue'], seasonal=True, m=12)
-    fitted_model = model.fit(df_group['Total Incremental Revenue'])
-    
-    # Forecast remaining months of the current year
-    forecast = fitted_model.predict(n_periods=12 - current_month + 1)
-    
-    # Append predictions with BU/COE and forecast
-    for i, pred in enumerate(forecast):
-        month = current_month + i
-        year = current_year
-        predictions.append({'Close Month': pd.to_datetime(f"{year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Total Incremental Revenue': pred})
+    try:
+        # Fit ARIMA model
+        model = ARIMA(df_group['Total Incremental Revenue'], order=(1, 1, 1), seasonal_order=(0, 0, 0, 12))
+        fitted_model = model.fit()
+        
+        # Forecast remaining months of the current year
+        forecast = fitted_model.predict(start=current_month, end=11)
+        
+        # Append predictions with BU/COE and forecast
+        for i, pred in enumerate(forecast):
+            month = current_month + i
+            year = current_year
+            predictions.append({'Close Month': pd.to_datetime(f"{year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Total Incremental Revenue': pred})
+    except:
+        print(f"Unable to fit ARIMA model for {group}")
 
 # Create DataFrame from predictions
 predictions_df = pd.DataFrame(predictions)
