@@ -22,7 +22,7 @@ for bu_coe in selected_bu_coe:
     bu_coe_data = df_selected[df_selected['BU/COE'] == bu_coe]
     
     # Fit AutoARIMA model
-    autoarima_model = auto_arima(bu_coe_data['Total Incremental Revenue'], seasonal=True, m=12)
+    autoarima_model = auto_arima(bu_coe_data['Total Incremental Revenue'], seasonal=True, m=12, seasonal_test='ocsb')
     
     # Train the ARIMA model
     model = ARIMA(bu_coe_data['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
