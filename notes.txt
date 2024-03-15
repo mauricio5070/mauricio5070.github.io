@@ -1,1 +1,40 @@
-With a diverse professional background, I bring extensive experience in data analysis and programming, encompassing roles such as pricing analysis at Walmart and fleet management engineering at HP Inc. Proficient in tools and languages including SQL, Python, and Power BI, I have spearheaded projects involving machine learning, geospatial analysis, and competitor price prediction. Holding a degree in Systems Engineering, supplemented by ongoing studies in Data Science and Business Analytics, I offer a solid foundation for impactful contributions. Fluent in both English and Spanish, I bring a global perspective to problem-solving and collaboration
+import pandas as pd
+from pmdarima import auto_arima
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+
+# Load your dataframe (assuming it's named df)
+# Example: df = pd.read_csv('your_data.csv')
+
+# Convert Close Month to datetime if it's not already in datetime format
+df['Close Month'] = pd.to_datetime(df['Close Month'])
+
+# Filter data for the current year
+current_year = pd.Timestamp.now().year
+current_year_data = df[df['Close Month'].dt.year == current_year]
+
+# Split data into train and test sets using 80-20 split
+train, test = train_test_split(current_year_data, test_size=0.2, random_state=42)
+
+# Determine the number of future periods to forecast
+max_month = current_year_data['Close Month'].max().month
+n_periods = 12 - max_month
+
+# Define a function to fit AutoARIMA and make predictions for each BU/COE
+def fit_predict_auto_arima(df, n_periods):
+    predictions = pd.DataFrame()
+    for group, data in df.groupby('BU/COE'):
+        model = auto_arima(data['Total Incremental Revenue'], seasonal=True, m=12)
+        future_forecast = model.predict(n_periods=n_periods)
+        predictions[group] = future_forecast
+    return predictions
+
+# Fit AutoARIMA and make predictions
+predictions = fit_predict_auto_arima(train, n_periods)
+
+# Evaluate model performance
+test_predictions = fit_predict_auto_arima(test, n_periods)
+mse = mean_squared_error(test['Total Incremental Revenue'], test_predictions.mean(axis=1))
+print("Mean Squared Error (MSE):", mse)
+
+# Optionally, you can print other evaluation metrics or fine-tune the model parameters.
