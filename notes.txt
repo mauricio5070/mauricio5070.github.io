@@ -1,40 +1,37 @@
 import pandas as pd
+from statsmodels.tsa.arima.model import ARIMA
 from pmdarima import auto_arima
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
 
-# Load your dataframe (assuming it's named df)
-# Example: df = pd.read_csv('your_data.csv')
+# Load your dataset
+# Assuming your dataset is stored in a DataFrame called df
+# with columns 'Close Month', 'Close Year', 'BU/COE', and 'Total Incremental Revenue'
 
-# Convert Close Month to datetime if it's not already in datetime format
-df['Close Month'] = pd.to_datetime(df['Close Month'])
+# Combine 'Close Month' and 'Close Year' columns into a single date column
+df['date'] = pd.to_datetime(df['Close Year'].astype(str) + '-' + df['Close Month'].astype(str))
 
-# Filter data for the current year
-current_year = pd.Timestamp.now().year
-current_year_data = df[df['Close Month'].dt.year == current_year]
+# Aggregate the data if needed
+# For ARIMA, we'll just use the original data
 
-# Split data into train and test sets using 80-20 split
-train, test = train_test_split(current_year_data, test_size=0.2, random_state=42)
+# Split the data into train and test sets
+train_size = int(len(df) * 0.8)
+train, test = df[:train_size], df[train_size:]
 
-# Determine the number of future periods to forecast
-max_month = current_year_data['Close Month'].max().month
-n_periods = 12 - max_month
+# Fit AutoARIMA model
+autoarima_model = auto_arima(train['Total Incremental Revenue'], seasonal=True, m=12)
 
-# Define a function to fit AutoARIMA and make predictions for each BU/COE
-def fit_predict_auto_arima(df, n_periods):
-    predictions = pd.DataFrame()
-    for group, data in df.groupby('BU/COE'):
-        model = auto_arima(data['Total Incremental Revenue'], seasonal=True, m=12)
-        future_forecast = model.predict(n_periods=n_periods)
-        predictions[group] = future_forecast
-    return predictions
+# Train the ARIMA model
+model = ARIMA(train['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
+model_fit = model.fit()
 
-# Fit AutoARIMA and make predictions
-predictions = fit_predict_auto_arima(train, n_periods)
+# Make predictions
+predictions = model_fit.forecast(steps=len(test))
 
-# Evaluate model performance
-test_predictions = fit_predict_auto_arima(test, n_periods)
-mse = mean_squared_error(test['Total Incremental Revenue'], test_predictions.mean(axis=1))
-print("Mean Squared Error (MSE):", mse)
-
-# Optionally, you can print other evaluation metrics or fine-tune the model parameters.
+# Visualize the predictions
+plt.plot(test['date'], test['Total Incremental Revenue'], label='Actual')
+plt.plot(test['date'], predictions, label='Predicted')
+plt.xlabel('Date')
+plt.ylabel('Total Incremental Revenue')
+plt.title('ARIMA Forecast')
+plt.legend()
+plt.show()
