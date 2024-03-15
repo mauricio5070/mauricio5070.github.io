@@ -21,10 +21,6 @@ for bu_coe in selected_bu_coe:
     # Filter data for the current BU/COE
     bu_coe_data = df_selected[df_selected['BU/COE'] == bu_coe]
     
-    # If there is not enough data for forecasting, skip to the next BU/COE
-    if len(bu_coe_data) < 2:
-        continue
-    
     # Fit AutoARIMA model
     autoarima_model = auto_arima(bu_coe_data['Total Incremental Revenue'], seasonal=False)
     
@@ -37,29 +33,23 @@ for bu_coe in selected_bu_coe:
     current_month = pd.Timestamp.now().month
     
     # Forecast revenue for each upcoming month of the current year
-    for month in range(current_month + 1, 13):
-        # Forecast revenue for the current month
-        forecast_date = pd.Timestamp(year=current_year, month=month, day=1)
-        try:
-            forecast_value = model_fit.forecast(steps=1)[0]
-        except KeyError:
-            # If there is an error in forecast, skip to the next BU/COE
-            break
-        
-        # Create a DataFrame with the revenue prediction for the current month and BU/COE
-        bu_coe_prediction = pd.DataFrame({
-            'Close Month': [forecast_date.month],
-            'Close Year': [forecast_date.year],
-            'BU/COE': [bu_coe],
-            'Total Incremental Revenue Prediction': [forecast_value]
-        })
-        
-        # Append the prediction to the main predictions DataFrame
-        predictions_df = pd.concat([predictions_df, bu_coe_prediction], ignore_index=True)
-        
-        # Update the model with the new data point
-        bu_coe_data = bu_coe_data.append({'date': forecast_date, 'Total Incremental Revenue': forecast_value}, ignore_index=True)
-        model_fit = ARIMA(bu_coe_data.set_index('date')['Total Incremental Revenue'], order=autoarima_model.order).fit()
+    forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=12 - current_month, freq='MS')
+    forecast = []
+
+    for forecast_date in forecast_dates:
+        forecast.append(model_fit.forecast(steps=1)[0])  # Forecast one step ahead
+        model_fit = model_fit.append(bu_coe_data.loc[bu_coe_data['date'] == forecast_date])  # Update model with new data
+
+    # Create a DataFrame with the revenue predictions for the current BU/COE and each month
+    bu_coe_predictions = pd.DataFrame({
+        'Close Month': forecast_dates.month,
+        'Close Year': forecast_dates.year,
+        'BU/COE': bu_coe,
+        'Total Incremental Revenue Prediction': forecast
+    })
+    
+    # Append predictions for the current BU/COE to the main predictions DataFrame
+    predictions_df = pd.concat([predictions_df, bu_coe_predictions], ignore_index=True)
 
 # Output the predictions DataFrame
 print(predictions_df)
