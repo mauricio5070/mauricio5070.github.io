@@ -37,9 +37,19 @@ for bu_coe in selected_bu_coe:
     forecast = []
 
     for forecast_date in forecast_dates:
+        # Extract the month and year for the current forecast
+        forecast_month = forecast_date.month
+        forecast_year = forecast_date.year
+        
+        # Forecast revenue for the current month
         forecast.append(model_fit.forecast(steps=1)[0])  # Forecast one step ahead
-        model_fit = model_fit.append(bu_coe_data.loc[bu_coe_data['date'] == forecast_date])  # Update model with new data
-
+        
+        # Append the forecasted revenue to the dataset for the next forecast
+        bu_coe_data = bu_coe_data.append({'date': forecast_date, 'Total Incremental Revenue': forecast[-1]}, ignore_index=True)
+        
+        # Update the model with the new data point
+        model_fit = ARIMA(bu_coe_data.set_index('date')['Total Incremental Revenue'], order=autoarima_model.order).fit()
+        
     # Create a DataFrame with the revenue predictions for the current BU/COE and each month
     bu_coe_predictions = pd.DataFrame({
         'Close Month': forecast_dates.month,
