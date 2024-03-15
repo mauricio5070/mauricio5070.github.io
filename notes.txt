@@ -31,13 +31,12 @@ for bu_coe in selected_bu_coe:
     # Find the current year and remaining months
     current_year = pd.Timestamp.now().year
     current_month = pd.Timestamp.now().month
-    remaining_months = 12 - current_month
     
-    # Forecast revenue for the remaining months of the current year
-    forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=remaining_months, freq='MS')
+    # Forecast revenue for each upcoming month of the current year
+    forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=12 - current_month, freq='MS')
     forecast = model_fit.forecast(steps=len(forecast_dates))
     
-    # Create a DataFrame with the revenue predictions for the current BU/COE
+    # Create a DataFrame with the revenue predictions for the current BU/COE and each month
     bu_coe_predictions = pd.DataFrame({
         'Close Month': forecast_dates.month,
         'Close Year': forecast_dates.year,
