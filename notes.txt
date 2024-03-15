@@ -9,29 +9,27 @@ from pmdarima import auto_arima
 # Combine 'Close Month' and 'Close Year' columns into a single date column
 df['date'] = pd.to_datetime(df['Close Year'].astype(int).astype(str) + '-' + df['Close Month'].astype(int).astype(str) + '-01')
 
-# Find the current month and year
-current_month = pd.Timestamp.now().month
-current_year = pd.Timestamp.now().year
-
-# Filter the dataset to include only data up to the current month and year
-filtered_df = df[(df['date'].dt.year < current_year) | ((df['date'].dt.year == current_year) & (df['date'].dt.month <= current_month))]
-
 # Fit AutoARIMA model
-autoarima_model = auto_arima(filtered_df['Total Incremental Revenue'], seasonal=True, m=12)
+autoarima_model = auto_arima(df['Total Incremental Revenue'], seasonal=True, m=12)
 
 # Train the ARIMA model
-model = ARIMA(filtered_df['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
+model = ARIMA(df['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
 model_fit = model.fit()
 
+# Find the current year and remaining months
+current_year = pd.Timestamp.now().year
+current_month = pd.Timestamp.now().month
+remaining_months = 12 - current_month
+
 # Forecast revenue for the remaining months of the current year
-forecast_dates = pd.date_range(start=f"{current_year}-{current_month}-01", periods=12 - current_month, freq='MS')
+forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=remaining_months, freq='MS')
 forecast = model_fit.forecast(steps=len(forecast_dates))
 
 # Create a DataFrame with the revenue predictions
 predictions_df = pd.DataFrame({
     'Close Month': forecast_dates.month,
     'Close Year': forecast_dates.year,
-    'BU/COE': filtered_df['BU/COE'].iloc[-1],  # Assuming BU/COE remains the same for predictions
+    'BU/COE': df['BU/COE'].iloc[-1],  # Assuming BU/COE remains the same for predictions
     'Total Incremental Revenue Prediction': forecast
 })
 
