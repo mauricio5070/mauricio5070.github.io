@@ -1,37 +1,39 @@
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA
 from pmdarima import auto_arima
-import matplotlib.pyplot as plt
 
 # Load your dataset
 # Assuming your dataset is stored in a DataFrame called df
 # with columns 'Close Month', 'Close Year', 'BU/COE', and 'Total Incremental Revenue'
 
 # Combine 'Close Month' and 'Close Year' columns into a single date column
-df['date'] = pd.to_datetime(df['Close Year'].astype(str) + '-' + df['Close Month'].astype(str))
+df['date'] = pd.to_datetime(df['Close Year'].astype(int).astype(str) + '-' + df['Close Month'].astype(int).astype(str) + '-01')
 
-# Aggregate the data if needed
-# For ARIMA, we'll just use the original data
+# Find the current month and year
+current_month = pd.Timestamp.now().month
+current_year = pd.Timestamp.now().year
 
-# Split the data into train and test sets
-train_size = int(len(df) * 0.8)
-train, test = df[:train_size], df[train_size:]
+# Filter the dataset to include only data up to the current month and year
+filtered_df = df[(df['date'].dt.year < current_year) | ((df['date'].dt.year == current_year) & (df['date'].dt.month <= current_month))]
 
 # Fit AutoARIMA model
-autoarima_model = auto_arima(train['Total Incremental Revenue'], seasonal=True, m=12)
+autoarima_model = auto_arima(filtered_df['Total Incremental Revenue'], seasonal=True, m=12)
 
 # Train the ARIMA model
-model = ARIMA(train['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
+model = ARIMA(filtered_df['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
 model_fit = model.fit()
 
-# Make predictions
-predictions = model_fit.forecast(steps=len(test))
+# Forecast revenue for the remaining months of the current year
+forecast_dates = pd.date_range(start=f"{current_year}-{current_month}-01", periods=12 - current_month, freq='MS')
+forecast = model_fit.forecast(steps=len(forecast_dates))
 
-# Visualize the predictions
-plt.plot(test['date'], test['Total Incremental Revenue'], label='Actual')
-plt.plot(test['date'], predictions, label='Predicted')
-plt.xlabel('Date')
-plt.ylabel('Total Incremental Revenue')
-plt.title('ARIMA Forecast')
-plt.legend()
-plt.show()
+# Create a DataFrame with the revenue predictions
+predictions_df = pd.DataFrame({
+    'Close Month': forecast_dates.month,
+    'Close Year': forecast_dates.year,
+    'BU/COE': filtered_df['BU/COE'].iloc[-1],  # Assuming BU/COE remains the same for predictions
+    'Total Incremental Revenue Prediction': forecast
+})
+
+# Output the predictions DataFrame
+print(predictions_df)
