@@ -43,8 +43,17 @@ for group, df_group in df_grouped.groupby('BU/COE'):
 # Create DataFrame from predictions
 predictions_df = pd.DataFrame(predictions)
 
-# Merge predictions with original data
-merged_data = pd.merge(df, predictions_df, on=['Close Month', 'BU/COE'], how='left')
+# Merge predictions with filtered original data
+merged_data = pd.merge(df[df['BU/COE'].isin(countries)], predictions_df, on=['Close Month', 'BU/COE'], how='left')
 
-# Output merged_data with additional 'Prediction' column
+# Convert 'Close Year' to int
+merged_data['Close Year'] = merged_data['Close Year'].astype(int)
+
+# Convert 'Close Month' to month number
+merged_data['Close Month'] = merged_data['Close Month'].dt.month
+
+# Rename 'Total Incremental Revenue_y' to 'Revenue prediction'
+merged_data.rename(columns={'Total Incremental Revenue_y': 'Revenue Prediction'}, inplace=True)
+
+# Output merged_data
 merged_data
