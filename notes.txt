@@ -21,6 +21,10 @@ for bu_coe in selected_bu_coe:
     # Filter data for the current BU/COE
     bu_coe_data = df_selected[df_selected['BU/COE'] == bu_coe]
     
+    # If there is not enough data for forecasting, skip to the next BU/COE
+    if len(bu_coe_data) < 2:
+        continue
+    
     # Fit AutoARIMA model
     autoarima_model = auto_arima(bu_coe_data['Total Incremental Revenue'], seasonal=False)
     
@@ -36,7 +40,11 @@ for bu_coe in selected_bu_coe:
     for month in range(current_month + 1, 13):
         # Forecast revenue for the current month
         forecast_date = pd.Timestamp(year=current_year, month=month, day=1)
-        forecast_value = model_fit.forecast(steps=1)[0]
+        try:
+            forecast_value = model_fit.forecast(steps=1)[0]
+        except KeyError:
+            # If there is an error in forecast, skip to the next BU/COE
+            break
         
         # Create a DataFrame with the revenue prediction for the current month and BU/COE
         bu_coe_prediction = pd.DataFrame({
