@@ -21,17 +21,20 @@ current_year = pd.Timestamp.now().year
 current_month = pd.Timestamp.now().month
 remaining_months = 12 - current_month
 
-# Forecast revenue for the remaining months of the current year
-forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=remaining_months, freq='MS')
-forecast = model_fit.forecast(steps=len(forecast_dates))
+# Create a DataFrame to store predictions for all BU/COE
+predictions_df = pd.DataFrame(columns=['Close Month', 'Close Year', 'BU/COE', 'Total Incremental Revenue Prediction'])
 
-# Create a DataFrame with the revenue predictions
-predictions_df = pd.DataFrame({
-    'Close Month': forecast_dates.month,
-    'Close Year': forecast_dates.year,
-    'BU/COE': df['BU/COE'].iloc[-1],  # Assuming BU/COE remains the same for predictions
-    'Total Incremental Revenue Prediction': forecast
-})
+# Forecast revenue for the remaining months of the current year for each BU/COE
+for bu_coe in df['BU/COE'].unique():
+    forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=remaining_months, freq='MS')
+    forecast = model_fit.forecast(steps=len(forecast_dates))
+    bu_coe_predictions = pd.DataFrame({
+        'Close Month': forecast_dates.month,
+        'Close Year': forecast_dates.year,
+        'BU/COE': bu_coe,
+        'Total Incremental Revenue Prediction': forecast
+    })
+    predictions_df = pd.concat([predictions_df, bu_coe_predictions], ignore_index=True)
 
 # Output the predictions DataFrame
 print(predictions_df)
