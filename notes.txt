@@ -6,34 +6,46 @@ from pmdarima import auto_arima
 # Assuming your dataset is stored in a DataFrame called df
 # with columns 'Close Month', 'Close Year', 'BU/COE', and 'Total Incremental Revenue'
 
+# Filter the dataset for specific BU/COE
+selected_bu_coe = ['AUS', 'USIS', 'CAN']
+df_selected = df[df['BU/COE'].isin(selected_bu_coe)]
+
 # Combine 'Close Month' and 'Close Year' columns into a single date column
-df['date'] = pd.to_datetime(df['Close Year'].astype(int).astype(str) + '-' + df['Close Month'].astype(int).astype(str) + '-01')
+df_selected['date'] = pd.to_datetime(df_selected['Close Year'].astype(int).astype(str) + '-' + df_selected['Close Month'].astype(int).astype(str) + '-01')
 
-# Fit AutoARIMA model
-autoarima_model = auto_arima(df['Total Incremental Revenue'], seasonal=True, m=12)
-
-# Train the ARIMA model
-model = ARIMA(df['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
-model_fit = model.fit()
-
-# Find the current year and remaining months
-current_year = pd.Timestamp.now().year
-current_month = pd.Timestamp.now().month
-remaining_months = 12 - current_month
-
-# Create a DataFrame to store predictions for all BU/COE
+# Create a DataFrame to store predictions
 predictions_df = pd.DataFrame(columns=['Close Month', 'Close Year', 'BU/COE', 'Total Incremental Revenue Prediction'])
 
-# Forecast revenue for the remaining months of the current year for each BU/COE
-for bu_coe in df['BU/COE'].unique():
+# Forecast revenue for each BU/COE
+for bu_coe in selected_bu_coe:
+    # Filter data for the current BU/COE
+    bu_coe_data = df_selected[df_selected['BU/COE'] == bu_coe]
+    
+    # Fit AutoARIMA model
+    autoarima_model = auto_arima(bu_coe_data['Total Incremental Revenue'], seasonal=True, m=12)
+    
+    # Train the ARIMA model
+    model = ARIMA(bu_coe_data['Total Incremental Revenue'], order=autoarima_model.order, seasonal_order=autoarima_model.seasonal_order)
+    model_fit = model.fit()
+    
+    # Find the current year and remaining months
+    current_year = pd.Timestamp.now().year
+    current_month = pd.Timestamp.now().month
+    remaining_months = 12 - current_month
+    
+    # Forecast revenue for the remaining months of the current year
     forecast_dates = pd.date_range(start=f"{current_year}-{current_month + 1}-01", periods=remaining_months, freq='MS')
     forecast = model_fit.forecast(steps=len(forecast_dates))
+    
+    # Create a DataFrame with the revenue predictions for the current BU/COE
     bu_coe_predictions = pd.DataFrame({
         'Close Month': forecast_dates.month,
         'Close Year': forecast_dates.year,
         'BU/COE': bu_coe,
         'Total Incremental Revenue Prediction': forecast
     })
+    
+    # Append predictions for the current BU/COE to the main predictions DataFrame
     predictions_df = pd.concat([predictions_df, bu_coe_predictions], ignore_index=True)
 
 # Output the predictions DataFrame
