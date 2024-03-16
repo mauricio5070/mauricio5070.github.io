@@ -1,5 +1,5 @@
 import pandas as pd
-from statsmodels.tsa.arima.model import ARIMA
+from pmdarima import auto_arima
 
 # Load your dataset
 df = pd.read_csv("your_data.csv")
@@ -22,25 +22,27 @@ df_current_year = df[(df.index.year == current_year) & (df['BU/COE'].isin(countr
 df_grouped = df_current_year.groupby('BU/COE')['Total Incremental Revenue'].resample('M').sum().reset_index()
 
 # Initialize empty DataFrame for predictions
-predictions_df = pd.DataFrame(columns=['Close Month', 'BU/COE', 'Total Incremental Revenue'])
+predictions_df = pd.DataFrame(columns=['Close Month', 'BU/COE', 'Revenue Prediction'])
 
 # Loop through each BU/COE
 for group, df_group in df_grouped.groupby('BU/COE'):
     try:
-        # Fit ARIMA model
-        model = ARIMA(df_group['Total Incremental Revenue'], order=(1, 1, 1), seasonal_order=(0, 0, 0, 12))
-        fitted_model = model.fit()
+        # Fit auto ARIMA model
+        model = auto_arima(df_group['Total Incremental Revenue'], seasonal=True, m=12)
         
         # Forecast remaining months of the current year
         forecast_steps = 12 - current_month + 1
-        forecast = fitted_model.forecast(steps=forecast_steps)
+        forecast = model.predict(n_periods=forecast_steps)
         
         # Append predictions with BU/COE and forecast
         for i, pred in enumerate(forecast):
             month = current_month + i
-            predictions_df = predictions_df.append({'Close Month': pd.to_datetime(f"{current_year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Total Incremental Revenue': pred}, ignore_index=True)
+            predictions_df = predictions_df.append({'Close Month': pd.to_datetime(f"{current_year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Revenue Prediction': pred}, ignore_index=True)
     except:
-        print(f"Unable to fit ARIMA model for {group}")
+        print(f"Unable to fit auto ARIMA model for {group}")
+
+# Create a new column 'Total Incremental Revenue Prediction' with cumulative sum by BU/COE
+predictions_df['Total Incremental Revenue Prediction'] = predictions_df.groupby('BU/COE')['Revenue Prediction'].cumsum()
 
 # Output predictions_df
 predictions_df
