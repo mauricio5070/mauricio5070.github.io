@@ -32,15 +32,7 @@ for group, df_group in df_grouped.groupby('BU/COE'):
         fitted_model = model.fit()
         
         # Forecast remaining months of the current year
-        forecast = fitted_model.forecast(steps=12 - current_month + 1)
+        forecast_steps = 12 - current_month + 1
+        forecast = fitted_model.forecast(steps=forecast_steps)
         
-        # Append predictions with BU/COE and forecast
-        for i, pred in enumerate(forecast):
-            month = current_month + i
-            year = current_year
-            predictions_df = predictions_df.append({'Close Month': pd.to_datetime(f"{year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Total Incremental Revenue': pred}, ignore_index=True)
-    except:
-        print(f"Unable to fit ARIMA model for {group}")
-
-# Output predictions_df
-predictions_df
+        # Append predi
