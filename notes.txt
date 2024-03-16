@@ -21,8 +21,10 @@ df_current_year = df[(df.index.year == current_year) & (df['BU/COE'].isin(countr
 # Group by 'BU/COE' and resample to monthly frequency, summing 'Total Incremental Revenue'
 df_grouped = df_current_year.groupby('BU/COE')['Total Incremental Revenue'].resample('M').sum().reset_index()
 
+# Initialize empty DataFrame for predictions
+predictions_df = pd.DataFrame(columns=['Close Month', 'BU/COE', 'Total Incremental Revenue'])
+
 # Loop through each BU/COE
-predictions = []
 for group, df_group in df_grouped.groupby('BU/COE'):
     try:
         # Fit ARIMA model
@@ -36,24 +38,9 @@ for group, df_group in df_grouped.groupby('BU/COE'):
         for i, pred in enumerate(forecast):
             month = current_month + i
             year = current_year
-            predictions.append({'Close Month': pd.to_datetime(f"{year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Total Incremental Revenue': pred})
+            predictions_df = predictions_df.append({'Close Month': pd.to_datetime(f"{year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Total Incremental Revenue': pred}, ignore_index=True)
     except:
         print(f"Unable to fit ARIMA model for {group}")
 
-# Create DataFrame from predictions
-predictions_df = pd.DataFrame(predictions)
-
-# Merge predictions with filtered original data
-merged_data = pd.merge(df[df['BU/COE'].isin(countries)], predictions_df, on=['Close Month', 'BU/COE'], how='left')
-
-# Convert 'Close Year' to int
-merged_data['Close Year'] = merged_data['Close Year'].astype(int)
-
-# Convert 'Close Month' to month number
-merged_data['Close Month'] = merged_data['Close Month'].dt.month
-
-# Rename 'Total Incremental Revenue_y' to 'Revenue prediction'
-merged_data.rename(columns={'Total Incremental Revenue_y': 'Revenue Prediction'}, inplace=True)
-
-# Output merged_data
-merged_data
+# Output predictions_df
+predictions_df
