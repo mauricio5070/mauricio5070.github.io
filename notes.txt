@@ -1,5 +1,8 @@
 import pandas as pd
-from pmdarima import auto_arima
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Load your dataset
 df = pd.read_csv("your_data.csv")
@@ -27,22 +30,46 @@ predictions_df = pd.DataFrame(columns=['Close Month', 'BU/COE', 'Revenue Predict
 # Loop through each BU/COE
 for group, df_group in df_grouped.groupby('BU/COE'):
     try:
-        # Fit auto ARIMA model
-        model = auto_arima(df_group['Total Incremental Revenue'], seasonal=True, m=12)
+        # Fit ARIMA model
+        model = ARIMA(df_group['Total Incremental Revenue'], order=(1, 1, 1), seasonal_order=(0, 0, 0, 12))
+        fitted_model = model.fit()
         
         # Forecast remaining months of the current year
         forecast_steps = 12 - current_month + 1
-        forecast = model.predict(n_periods=forecast_steps)
+        forecast = fitted_model.forecast(steps=forecast_steps)
         
         # Append predictions with BU/COE and forecast
         for i, pred in enumerate(forecast):
             month = current_month + i
             predictions_df = predictions_df.append({'Close Month': pd.to_datetime(f"{current_year}-{month}-01", format='%Y-%m-%d'), 'BU/COE': group, 'Revenue Prediction': pred}, ignore_index=True)
     except:
-        print(f"Unable to fit auto ARIMA model for {group}")
+        print(f"Unable to fit ARIMA model for {group}")
 
-# Create a new column 'Total Incremental Revenue Prediction' with cumulative sum by BU/COE
-predictions_df['Total Incremental Revenue Prediction'] = predictions_df.groupby('BU/COE')['Revenue Prediction'].cumsum()
+# Calculate actual values for comparison
+actual_values = df_grouped.pivot(index='Close Month', columns='BU/COE', values='Total Incremental Revenue').sum(axis=1)
 
-# Output predictions_df
-predictions_df
+# Calculate predicted values
+predicted_values = predictions_df.pivot(index='Close Month', columns='BU/COE', values='Revenue Prediction').sum(axis=1)
+
+# Calculate metrics
+mae = mean_absolute_error(actual_values, predicted_values)
+mse = mean_squared_error(actual_values, predicted_values)
+rmse = np.sqrt(mse)
+mape = np.mean(np.abs((actual_values - predicted_values) / actual_values)) * 100
+
+# Print metrics
+print(f"Mean Absolute Error (MAE): {mae}")
+print(f"Mean Squared Error (MSE): {mse}")
+print(f"Root Mean Squared Error (RMSE): {rmse}")
+print(f"Mean Absolute Percentage Error (MAPE): {mape}")
+
+# Visualize actual vs predicted values
+plt.figure(figsize=(10, 6))
+plt.plot(actual_values.index, actual_values, label='Actual')
+plt.plot(predicted_values.index, predicted_values, label='Predicted')
+plt.xlabel('Date')
+plt.ylabel('Total Incremental Revenue')
+plt.title('Actual vs Predicted Total Incremental Revenue')
+plt.legend()
+plt.grid(True)
+plt.show()
