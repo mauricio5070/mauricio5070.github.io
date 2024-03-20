@@ -84,3 +84,78 @@ plt.title('Actual vs Predicted Total Incremental Revenue')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+
+
+
+
+
+# Fit auto ARIMA model
+        model = auto_arima(df_group['Total Incremental Revenue'], seasonal=True, m=12)
+        
+        # Forecast remaining months of the current year
+        forecast_steps = 12 - current_month + 1
+        forecast = model.predict(n_periods=forecast_steps)
+
+
+
+
+
+
+
+
+
+
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.graphics.tsaplots import plot_acf
+
+# Load your dataset
+df = pd.read_csv("your_data.csv")
+
+# Convert 'Close Month' and 'Close Year' to datetime
+df['Close Month'] = pd.to_datetime(df['Close Month'].astype(int).astype(str) + '-' + df['Close Year'].astype(int).astype(str), format='%m-%Y')
+
+# Set 'Close Month' as the index
+df.set_index('Close Month', inplace=True)
+
+# Recognize current year and month
+current_year = df.index[-1].year
+current_month = df.index[-1].month
+
+# Filter data for the specified countries and the current year
+countries = ['AUS', 'USIS', 'CAN']
+df_current_year = df[(df.index.year == current_year) & (df['BU/COE'].isin(countries))]
+
+# Group by 'BU/COE' and resample to monthly frequency, summing 'Total Incremental Revenue'
+df_grouped = df_current_year.groupby('BU/COE')['Total Incremental Revenue'].resample('M').sum().reset_index()
+
+# Plot the time series data
+plt.figure(figsize=(12, 6))
+for group, df_group in df_grouped.groupby('BU/COE'):
+    plt.plot(df_group['Close Month'], df_group['Total Incremental Revenue'], label=group)
+plt.title('Total Incremental Revenue by Month and BU/COE')
+plt.xlabel('Date')
+plt.ylabel('Total Incremental Revenue')
+plt.legend()
+plt.show()
+
+# Decompose the time series data into trend, seasonal, and residual components
+for group, df_group in df_grouped.groupby('BU/COE'):
+    decomposition = seasonal_decompose(df_group['Total Incremental Revenue'], model='additive')
+    decomposition.plot()
+    plt.title(f'Seasonal Decomposition - {group}')
+    plt.show()
+
+# Calculate and plot the autocorrelation function (ACF)
+for group, df_group in df_grouped.groupby('BU/COE'):
+    plot_acf(df_group['Total Incremental Revenue'], lags=12)
+    plt.title(f'Autocorrelation Function (ACF) - {group}')
+    plt.xlabel('Lag')
+    plt.ylabel('Autocorrelation')
+    plt.show()
