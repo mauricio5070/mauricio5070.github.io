@@ -249,3 +249,30 @@ plt.title('Actual vs Predicted Total Incremental Revenue')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+
+
+
+
+view: your_view_name {
+  dimension: week_number {
+    type: number
+    sql: EXTRACT(WEEK FROM ${date_field}) ;;
+  }
+
+  dimension: month_from_week {
+    type: string
+    sql: IF(${week_number} = 1, 'January',
+         IF(${week_number} = 2, 'January',
+         IF(${week_number} = 3, 'January',
+         IF(${week_number} = 4, 'January',
+         IF(${week_number} = 5, 'February',
+         IF(${week_number} = 6, 'February',
+         IF(${week_number} = 7, 'February',
+         IF(${week_number} = 8, 'February',
+         IF(${week_number} = 9, 'February',
+         -- Continue with other weeks and their respective months
+         'Unknown'))))))))) ;;
+  }
+}
