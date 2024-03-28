@@ -318,3 +318,90 @@ view: your_view_name {
          'Unknown')))))))))))))))))))))))))))))))))))))))))))) ;;
   }
 }
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import pandas as pd
+from statsmodels.tsa.api import VAR
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+# Load your dataset
+df = pd.read_csv("your_data.csv")
+
+# Convert 'Close Month' and 'Close Year' to datetime
+df['Close Month'] = pd.to_datetime(df['Close Month'].astype(int).astype(str) + '-' + df['Close Year'].astype(int).astype(str), format='%m-%Y')
+
+# Set 'Close Month' as the index
+df.set_index('Close Month', inplace=True)
+
+# Recognize current year and month
+current_year = df.index[-1].year
+current_month = df.index[-1].month
+
+# Filter data for the specified countries and the current year
+countries = ['AUS', 'USIS', 'CAN']
+df_current_year = df[df['BU/COE'].isin(countries)]
+
+# Group by 'BU/COE' and resample to monthly frequency, summing 'Total Incremental Revenue' and counting rows for volume
+df_grouped = df_current_year.groupby(['BU/COE', pd.Grouper(freq='M')]).agg({'Total Incremental Revenue': 'sum', 'Volume': 'count'}).reset_index()
+
+# Split data into train and test sets
+train_data, test_data = train_test_split(df_grouped, test_size=0.2, random_state=42)
+
+# Initialize empty DataFrame for predictions
+predictions_df = pd.DataFrame(columns=['Close Month', 'BU/COE', 'Revenue Prediction', 'Volume Prediction'])
+
+# Loop through each BU/COE in the training set
+for group, df_group in train_data.groupby('BU/COE'):
+    try:
+        # Select relevant columns and rename for VAR model
+        df_group = df_group[['Total Incremental Revenue', 'Volume']]
+        df_group.columns = ['Revenue', 'Volume']
+
+        # Fit VAR model
+        model = VAR(df_group)
+        fitted_model = model.fit()
+
+        # Forecast remaining months of the current year
+        forecast_steps = 12 - current_month + 1
+        forecast = fitted_model.forecast(df_group.values[-fitted_model.k_ar:], steps=forecast_steps)
+
+        # Append predictions with BU/COE and forecast
+        for i, pred in enumerate(forecast):
+            month = current_month + i
+            predictions_df = predictions_df.append({'Close Month': pd.to_datetime(f"{current_year}-{month}-01", format='%Y-%m-%d'),
+                                                    'BU/COE': group,
+                                                    'Revenue Prediction': pred[0],
+                                                    'Volume Prediction': pred[1]}, ignore_index=True)
+    except:
+        print(f"Unable to fit VAR model for {group}")
+
+# Merge actual and predicted values on 'Close Month' and 'BU/COE'
+merged_df = pd.merge(test_data, predictions_df, on=['Close Month', 'BU/COE'], how='left')
+
+# Calculate actual values for comparison
+actual_revenue = merged_df.pivot(index='Close Month', columns='BU/COE', values='Total Incremental Revenue').sum(axis=1)
+actual_volume = merged_df.pivot(index='Close Month', columns='BU/COE', values='Volume').sum(axis=1)
+
+# Calculate predicted values
+predicted_revenue = merged_df.pivot(index='Close Month', columns='BU/COE', values='Revenue Prediction').sum(axis=1)
+predicted_volume = merged_df.pivot(index='Close Month', columns='BU/COE', values='Volume Prediction').sum(axis=1)
+
+# Drop rows with missing values
+actual_revenue.dropna(inplace=True)
+actual_volume.dropna(inplace=True)
+predicted_revenue.dropna(inplace=True)
+predicted_volume.dropna(inplace=True)
+
+# Print actual and predicted values
+print("Actual Revenue:")
+print(actual_revenue)
+print("\nPredicted Revenue:")
+print(predicted_revenue)
+print("\nActual Volume:")
+print(actual_volume)
+print("\nPredicted Volume:")
+print(predicted_volume)
+
