@@ -1,29 +1,31 @@
 import os
-import csv
+import pandas as pd
 
-# Function to update Week_Number column in CSV files
-def update_week_number(folder_path, folder_name):
-    for file_name in os.listdir(folder_path):
-        if file_name.endswith('.csv') and file_name not in ["Executive_Summary_Table.csv", "L2C Enabled Revenue (created pipeline).csv"]:
-            file_path = os.path.join(folder_path, file_name)
-            with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
-                csv_reader = csv.DictReader(csvfile)
-                rows = list(csv_reader)
-                for row in rows:
-                    row['Week_Number'] = folder_name
-            with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
-                fieldnames = csv_reader.fieldnames
-                csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                csv_writer.writeheader()
-                csv_writer.writerows(rows)
+# Function to read CSV files, add a 'week' column, and append to a master DataFrame
+def process_folder(folder_path, week, master_dfs):
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.lower() in ["executive_summary_table.csv", "l2c enabled revenue (created pipeline).csv"]:
+                continue  # Skip these files
+            if file.endswith(".csv"):
+                file_path = os.path.join(root, file)
+                df = pd.read_csv(file_path)
+                df['week'] = week
+                if file in master_dfs:
+                    master_dfs[file] = master_dfs[file].append(df, ignore_index=True)
+                else:
+                    master_dfs[file] = df
+    return master_dfs
 
-# Main function to iterate through folders
-def main():
-    for i in range(1, 14):
-        folder_name = str(i)
-        folder_path = os.path.join('2.l2c', folder_name)
-        if os.path.exists(folder_path):
-            update_week_number(folder_path, folder_name)
+# Initialize master DataFrames
+master_dfs = {}
 
-if __name__ == "__main__":
-    main()
+# Iterate over folders
+for i in range(3, 14):
+    folder_path = f"path/to/folder/x/{i}"
+    if os.path.exists(folder_path):
+        master_dfs = process_folder(folder_path, i, master_dfs)
+
+# Write master DataFrames to final CSV files
+for file, df in master_dfs.items():
+    df.to_csv(f"{file}_final.csv", index=False)
