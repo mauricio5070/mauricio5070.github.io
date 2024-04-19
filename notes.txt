@@ -6,12 +6,12 @@ def update_week_number(folder_path, folder_name):
     for file_name in os.listdir(folder_path):
         if file_name.endswith('.csv') and file_name not in ["Executive_Summary_Table.csv", "L2C Enabled Revenue (created pipeline).csv"]:
             file_path = os.path.join(folder_path, file_name)
-            with open(file_path, 'r', newline='') as csvfile:
+            with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
                 csv_reader = csv.DictReader(csvfile)
                 rows = list(csv_reader)
                 for row in rows:
                     row['Week_Number'] = folder_name
-            with open(file_path, 'w', newline='') as csvfile:
+            with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = csv_reader.fieldnames
                 csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 csv_writer.writeheader()
