@@ -1,5 +1,9 @@
 import os
 import pandas as pd
+import warnings
+
+# Suppress deprecation warning
+warnings.filterwarnings("ignore", message="The behavior of DataFrame concatenation with empty or all-NA entries is deprecated.")
 
 # Function to read CSV files, add a 'week' column, and append to a master DataFrame
 def process_folder(folder_path, week, master_dfs):
@@ -22,7 +26,7 @@ master_dfs = {}
 
 # Iterate over folders
 for i in range(3, 14):
-    folder_path = f"C:/Users/mjmm/proj/x/{i}"  # Change the path accordingly
+    folder_path = f"C:/Users/mim27/Desktop/Projects/L2C_Append/2. l2c enab/{i}"  # Change the path accordingly
     if os.path.exists(folder_path):
         master_dfs = process_folder(folder_path, i, master_dfs)
 
