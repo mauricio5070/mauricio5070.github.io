@@ -41,3 +41,6 @@ round_x = lambda x: round(x) if pd.notnull(x) else x
 
 # Apply the lambda function to column 'x'
 result['x'] = result['x'].apply(round_x)
+if 'f' in df.columns:
+    # Drop column 'f' from the dataframe
+    df.drop('f', axis=1, inplace=True)
