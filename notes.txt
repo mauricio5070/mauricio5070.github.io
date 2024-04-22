@@ -36,4 +36,8 @@ if last_month < 12:
 if last_month == 12:
     df['Volume Forecast'] = ''
 
-result = pd.merge(df1[df1['Forecast'].notnull()], df2, on=['x', 'y', 'z'], how='left')
+# Define a lambda function to conditionally round the values in column 'x'
+round_x = lambda x: round(x) if pd.notnull(x) else x
+
+# Apply the lambda function to column 'x'
+result['x'] = result['x'].apply(round_x)
