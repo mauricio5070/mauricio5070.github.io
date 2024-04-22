@@ -36,4 +36,4 @@ if last_month < 12:
 if last_month == 12:
     df['Volume Forecast'] = ''
 
-result = pd.merge(df1[df1['Colin J'] == 1], df2[df2['Colin J'] == 1], on=['x', 'y', 'z'], how='inner')
+result = pd.merge(df1[df1['Forecast'].notnull()], df2, on=['x', 'y', 'z'], how='left')
