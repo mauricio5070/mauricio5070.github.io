@@ -1,35 +1,38 @@
-import os
 import pandas as pd
-import warnings
+import datetime
 
-# Suppress deprecation warning
-warnings.filterwarnings("ignore", message="The behavior of DataFrame concatenation with empty or all-NA entries is deprecated.")
+# Assuming 'df' is your original dataframe containing volume data
+# Assuming 'year' is defined somewhere in your code
 
-# Function to read CSV files, add a 'week' column, and append to a master DataFrame
-def process_folder(folder_path, week, master_dfs):
-    for root, dirs, files in os.walk(folder_path):
-        for file in files:
-            if file.lower() in ["executive_summary_table.csv", "l2c enabled revenue (created pipeline).csv"]:
-                continue  # Skip these files
-            if file.endswith(".csv"):
-                file_path = os.path.join(root, file)
-                df = pd.read_csv(file_path)
-                df['week'] = week
-                if file in master_dfs:
-                    master_dfs[file] = pd.concat([master_dfs[file], df], ignore_index=True)
-                else:
-                    master_dfs[file] = df
-    return master_dfs
+last_month = datetime.date.today().month
+# last_month = 10
 
-# Initialize master DataFrames
-master_dfs = {}
+if last_month < 12:
+    last_months_data = df[(df['year'] == year) & (df['month'] <= last_month)]
+    last_months_data = last_months_data.groupby('month')['YTD Closed Win (Vol)'].sum().reset_index()
+    last_months_data['avg_volume'] = last_months_data['YTD Closed Win (Vol)'] / last_months_data['month']
+    avg_volume = last_months_data[last_months_data['month'] == last_month]['avg_volume'].astype(float)
+    volume = last_months_data[last_months_data['month'] == last_month]['YTD Closed Win (Vol)'].astype(float)
+    i = last_month + 1
+    multiplier = 1
+    new_df = pd.DataFrame(columns=['BU', 'month', 'year', 'Volume Forecast'])
 
-# Iterate over folders
-for i in range(3, 14):
-    folder_path = f"C:/Users/mim27/Desktop/Projects/L2C_Append/2. l2c enab/{i}"  # Change the path accordingly
-    if os.path.exists(folder_path):
-        master_dfs = process_folder(folder_path, i, master_dfs)
+    while i < 13:
+        data = [['CAN', i, year, volume + (avg_volume * multiplier)],
+                ['EWS', i, year, volume + (avg_volume * multiplier)],
+                ['AUS', i, year, volume + (avg_volume * multiplier)],
+                ['USIS', i, year, volume + (avg_volume * multiplier)]]
+        new_df1 = pd.DataFrame(data, columns=['BU', 'month', 'year', 'Volume Forecast'])
+        new_df = pd.concat([new_df, new_df1])
+        i = i + 1
+        multiplier = multiplier + 1
 
-# Write master DataFrames to final CSV files
-for file, df in master_dfs.items():
-    df.to_csv(f"{file}_final.csv", index=False)
+    new_df['Volume Forecast'] = new_df['Volume Forecast'].astype(str)
+    new_df['Volume Forecast'] = new_df['Volume Forecast'].str.replace('\.0', '', regex=True)  # Remove decimal .0
+    new_df = new_df.drop_duplicates()
+    result = pd.concat([df, new_df])
+    df = result
+
+if last_month == 12:
+    df['Volume Forecast'] = ''
+
