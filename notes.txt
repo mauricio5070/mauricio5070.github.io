@@ -1,46 +1,13 @@
-import pandas as pd
-import datetime
+# Create a copy of df with year decremented by 1 and forecast_flag set to 0
+new_df = df.copy()
+new_df['year'] = new_df['year'] - 1
+new_df['forecast_flag'] = 0
 
-# Assuming 'df' is your original dataframe containing volume data
-# Assuming 'year' is defined somewhere in your code
+# Add a new column 'previous YTD Closed Win (Vol)' to the original dataframe df
+# containing YTD Closed Win (Vol) values from the newly created dataframe new_df
+df['previous YTD Closed Win (Vol)'] = df.merge(new_df, on=['BU', 'month', 'year'], how='left')['YTD Closed Win (Vol)_y']
 
-last_month = datetime.date.today().month
-# last_month = 10
+# Rename the column to remove the '_y' suffix
+df.rename(columns={'previous YTD Closed Win (Vol)': 'previous YTD Closed Win (Vol)'}, inplace=True)
 
-if last_month < 12:
-    last_months_data = df[(df['year'] == year) & (df['month'] <= last_month)]
-    last_months_data = last_months_data.groupby('month')['YTD Closed Win (Vol)'].sum().reset_index()
-    last_months_data['avg_volume'] = last_months_data['YTD Closed Win (Vol)'] / last_months_data['month']
-    avg_volume = last_months_data[last_months_data['month'] == last_month]['avg_volume'].astype(float)
-    volume = last_months_data[last_months_data['month'] == last_month]['YTD Closed Win (Vol)'].astype(float)
-    i = last_month + 1
-    multiplier = 1
-    new_df = pd.DataFrame(columns=['BU', 'month', 'year', 'Volume Forecast'])
-
-    while i < 13:
-        data = [['CAN', i, year, volume + (avg_volume * multiplier)],
-                ['EWS', i, year, volume + (avg_volume * multiplier)],
-                ['AUS', i, year, volume + (avg_volume * multiplier)],
-                ['USIS', i, year, volume + (avg_volume * multiplier)]]
-        new_df1 = pd.DataFrame(data, columns=['BU', 'month', 'year', 'Volume Forecast'])
-        new_df = pd.concat([new_df, new_df1])
-        i = i + 1
-        multiplier = multiplier + 1
-
-    new_df['Volume Forecast'] = new_df['Volume Forecast'].astype(str)
-    new_df['Volume Forecast'] = new_df['Volume Forecast'].str.replace('\.0', '', regex=True)  # Remove decimal .0
-    new_df = new_df.drop_duplicates()
-    result = pd.concat([df, new_df])
-    df = result
-
-if last_month == 12:
-    df['Volume Forecast'] = ''
-
-# Define a lambda function to conditionally round the values in column 'x'
-round_x = lambda x: round(x) if pd.notnull(x) else x
-
-# Apply the lambda function to column 'x'
-result['x'] = result['x'].apply(round_x)
-if 'f' in df.columns:
-    # Drop column 'f' from the dataframe
-    df.drop('f', axis=1, inplace=True)
+# Now df contains the 'previous YTD Closed Win (Vol)' column with values from the newly created dataframe new_df
