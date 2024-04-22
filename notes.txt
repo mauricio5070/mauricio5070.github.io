@@ -11,3 +11,7 @@ df['previous YTD Closed Win (Vol)'] = df.merge(new_df, on=['BU', 'month', 'year'
 df.rename(columns={'previous YTD Closed Win (Vol)': 'previous YTD Closed Win (Vol)'}, inplace=True)
 
 # Now df contains the 'previous YTD Closed Win (Vol)' column with values from the newly created dataframe new_df
+# Drop rows where 'Area' and 'Forecast' are null and 'forecast_flag' is 0
+df = df.drop(df[(df['Area'].isnull()) & (df['Forecast'].isnull()) & (df['forecast_flag'] == 0)].index)
+
+# Now df contains rows where 'Area' and 'Forecast' are not null or 'forecast_flag' is not 0
