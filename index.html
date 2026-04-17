@@ -213,6 +213,26 @@
       font-weight: 500;
     }
 
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+      gap: 22px;
+      align-items: center;
+    }
+
+    .hero-image-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-image {
+      width: min(100%, 320px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow: 0 20px 45px rgba(8, 10, 26, 0.5);
+      object-fit: cover;
+    }
+
     .hero-location {
       color: var(--muted);
       font-size: 0.98rem;
@@ -362,6 +382,44 @@
       color: #f0f5ff;
     }
 
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .archive-link {
+      display: block;
+      text-decoration: none;
+      color: #e6edff;
+      border-radius: 14px;
+      padding: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.05);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .archive-link:hover,
+    .archive-link:focus {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .archive-link small {
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .cv-frame {
+      width: 100%;
+      height: min(72vh, 900px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
     .contact-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -400,13 +458,22 @@
       }
 
       .grid,
-      .contact-grid {
+      .contact-grid,
+      .archive-grid {
         grid-template-columns: 1fr;
       }
 
       .timeline-item {
         grid-template-columns: 1fr;
         gap: 4px;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-image {
+        width: min(100%, 280px);
       }
     }
 
@@ -446,6 +513,8 @@
         <li><a href="#skills">Skills</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#archive">Archive</a></li>
+        <li><a href="#cv">CV</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="whiteboard.html">Whiteboard</a></li>
       </ul>
@@ -454,13 +523,20 @@
 
   <main class="container">
     <section id="hero" class="glass panel">
-      <p class="eyebrow">Portfolio</p>
-      <h1 class="neon-text">Mauricio Montero</h1>
-      <p class="hero-title">AVP · AI &amp; Data Science · Digital Transformation</p>
-      <p class="hero-location">Costa Rica · Open to Global Remote</p>
-      <div class="hero-actions">
-        <a class="btn" href="#projects">View Featured Projects</a>
-        <a class="btn secondary" href="#contact">Let's Connect</a>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Portfolio</p>
+          <h1 class="neon-text">Mauricio Montero</h1>
+          <p class="hero-title">AVP · AI &amp; Data Science · Digital Transformation</p>
+          <p class="hero-location">Costa Rica · Open to Global Remote</p>
+          <div class="hero-actions">
+            <a class="btn" href="#projects">View Featured Projects</a>
+            <a class="btn secondary" href="#cv">View CV</a>
+          </div>
+        </div>
+        <div class="hero-image-wrap">
+          <img class="hero-image" src="images/mauricio-profile.png" alt="Portrait of Mauricio Montero">
+        </div>
       </div>
     </section>
 
@@ -589,6 +665,55 @@
           <p>Designed practical, industry-facing AI and analytics curriculum for executive learners.</p>
         </article>
       </div>
+    </section>
+
+    <section id="archive" class="glass panel">
+      <div class="section-heading">
+        <h2>Project Archive</h2>
+        <p>Explore selected project pages hosted in this portfolio repository.</p>
+      </div>
+      <div class="archive-grid">
+        <a class="archive-link" href="1-Fundamentos Modelos de Regresión.html">
+          1 - Fundamentos Modelos de Regresion
+          <small>Regression fundamentals project page</small>
+        </a>
+        <a class="archive-link" href="2-Preprocesamiento de Datos.html">
+          2 - Preprocesamiento de Datos
+          <small>Data preprocessing project page</small>
+        </a>
+        <a class="archive-link" href="Practica_1.html">
+          Practica 1
+          <small>Applied data analysis notebook export</small>
+        </a>
+        <a class="archive-link" href="Practica_2.html">
+          Practica 2
+          <small>Advanced analysis and modeling notebook export</small>
+        </a>
+        <a class="archive-link" href="walmartSales.html">
+          Walmart Sales Dashboard
+          <small>Power BI and pricing analytics project</small>
+        </a>
+        <a class="archive-link" href="SQL_for_data_analysis.html">
+          SQL Data Analysis Presentation
+          <small>SQL portfolio presentation page</small>
+        </a>
+        <a class="archive-link" href="movies_analysis.html">
+          Movies Analysis
+          <small>Python movie-rating analysis notebook export</small>
+        </a>
+      </div>
+    </section>
+
+    <section id="cv" class="glass panel">
+      <div class="section-heading">
+        <h2>Curriculum Vitae</h2>
+        <p>Updated professional profile, experience, and credentials.</p>
+      </div>
+      <div class="hero-actions" style="margin-top: 0; margin-bottom: 12px;">
+        <a class="btn" href="Mauricio_Montero_CV.pdf" target="_blank" rel="noopener noreferrer">Open CV</a>
+        <a class="btn secondary" href="Mauricio_Montero_CV.pdf" download>Download CV</a>
+      </div>
+      <iframe class="cv-frame" src="Mauricio_Montero_CV.pdf" title="Mauricio Montero CV"></iframe>
     </section>
 
     <section id="contact" class="glass panel">
