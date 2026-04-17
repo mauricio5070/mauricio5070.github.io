@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mauricio Montero | AVP · AI & Data Science</title>
+  <title>Mauricio Montero | Data Analytics · Data Science · AI Transformation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
@@ -12,10 +12,10 @@
       --bg: #050814;
       --surface: rgba(255, 255, 255, 0.07);
       --surface-strong: rgba(255, 255, 255, 0.12);
-      --border: rgba(255, 255, 255, 0.24);
-      --text: #e7ecff;
-      --muted: #b7c2f3;
-      --accent: linear-gradient(115deg, #7d49ff 0%, #ff54d9 35%, #53b8ff 70%, #53fff4 100%);
+      --border: rgba(255, 255, 255, 0.18);
+      --text: #f3f4f8;
+      --muted: #c8c6d8;
+      --accent: linear-gradient(115deg, #ff7a00 0%, #ff2d95 52%, #7d49ff 100%);
       --shadow: 0 24px 60px rgba(8, 10, 26, 0.55);
       --radius: 24px;
       --nav-height: 74px;
@@ -215,7 +215,7 @@
 
     .hero-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+      grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.75fr);
       gap: 22px;
       align-items: center;
     }
@@ -223,14 +223,30 @@
     .hero-image-wrap {
       display: flex;
       justify-content: center;
+      align-items: flex-end;
+      padding-top: 20px;
+    }
+
+    .hero-image-ring {
+      width: 258px;
+      height: 258px;
+      border-radius: 50%;
+      padding: 4px;
+      background: var(--accent);
+      box-shadow: 0 18px 44px rgba(6, 12, 36, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .hero-image {
-      width: min(100%, 320px);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      box-shadow: 0 20px 45px rgba(8, 10, 26, 0.5);
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
       object-fit: cover;
+      object-position: center 30%;
     }
 
     .hero-location {
@@ -248,12 +264,20 @@
     .btn {
       display: inline-block;
       text-decoration: none;
-      color: #04111c;
-      background: linear-gradient(125deg, #8f88ff, #56d5ff);
+      color: #ffffff;
+      background: var(--accent);
       padding: 10px 16px;
       border-radius: 999px;
       font-weight: 700;
       font-size: 0.92rem;
+      box-shadow: 0 10px 24px rgba(140, 61, 180, 0.36);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .btn:hover,
+    .btn:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(140, 61, 180, 0.46);
     }
 
     .btn.secondary {
@@ -264,7 +288,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
       gap: 14px;
     }
 
@@ -287,6 +311,76 @@
     .stat-label {
       color: var(--muted);
       font-size: 0.86rem;
+    }
+
+    .capability-dashboard {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .capability-tile {
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px;
+    }
+
+    .capability-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .capability-item {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+    }
+
+    .capability-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      gap: 8px;
+    }
+
+    .capability-head strong {
+      color: #eef2ff;
+      font-size: 0.9rem;
+    }
+
+    .capability-head span {
+      color: #8ef0ff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .capability-bar {
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      overflow: hidden;
+    }
+
+    .capability-fill {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+      transform-origin: left center;
+      animation: fillGrow 1s ease both;
+    }
+
+    @keyframes fillGrow {
+      from { transform: scaleX(0.1); opacity: 0.65; }
+      to { transform: scaleX(1); opacity: 1; }
     }
 
     .section-heading {
@@ -336,32 +430,80 @@
     }
 
     .timeline {
+      position: relative;
       display: grid;
-      gap: 10px;
+      gap: 16px;
+      padding: 8px 0;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, rgba(125, 73, 255, 0.7), rgba(83, 255, 244, 0.7));
+      box-shadow: 0 0 22px rgba(116, 157, 255, 0.5);
     }
 
     .timeline-item {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 12px;
-      align-items: start;
+      position: relative;
+      width: calc(50% - 22px);
+      margin-left: auto;
       padding: 14px;
-      border-radius: 16px;
+      border-radius: 18px;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .timeline-item:nth-child(odd) {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      top: 22px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #8ff5ff;
+      background: #8ff5ff;
+      box-shadow: 0 0 12px rgba(131, 218, 255, 0.7);
+      border: 2px solid rgba(10, 20, 48, 0.9);
+    }
+
+    .timeline-item:nth-child(odd)::before {
+      right: -29px;
+    }
+
+    .timeline-item:nth-child(even)::before {
+      left: -29px;
     }
 
     .timeline-date {
       color: #9fb1ff;
       font-size: 0.9rem;
       font-weight: 700;
+      margin-bottom: 4px;
     }
 
     .timeline-role {
       font-family: "Syne", sans-serif;
       color: #eef2ff;
       font-size: 1rem;
-      margin-bottom: 3px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-item ul {
+      margin-left: 18px;
+      display: grid;
+      gap: 4px;
+      color: #cfd8ff;
+      font-size: 0.93rem;
     }
 
     .project-list {
@@ -371,9 +513,18 @@
 
     .project-item {
       border-radius: 16px;
-      padding: 14px;
+      padding: 16px;
       border: 1px solid rgba(255, 255, 255, 0.16);
       background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 12px 30px rgba(8, 10, 30, 0.35);
+      color: #e6edff;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .project-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 18px 36px rgba(8, 10, 30, 0.45);
     }
 
     .project-item h3 {
@@ -382,10 +533,35 @@
       color: #f0f5ff;
     }
 
+    .project-item p {
+      color: #c8d2fb;
+      font-size: 0.94rem;
+    }
+
+    .project-item ul {
+      margin-left: 18px;
+      color: #d8e5ff;
+      margin-bottom: 10px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .featured-icon {
+      font-size: 1.2rem;
+      margin-right: 6px;
+    }
+
     .archive-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 16px;
     }
 
     .archive-link {
@@ -393,16 +569,18 @@
       text-decoration: none;
       color: #e6edff;
       border-radius: 14px;
-      padding: 13px;
+      padding: 15px;
       border: 1px solid rgba(255, 255, 255, 0.16);
       background: rgba(255, 255, 255, 0.05);
-      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 12px 30px rgba(8, 10, 30, 0.35);
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .archive-link:hover,
     .archive-link:focus {
       background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 18px 36px rgba(8, 10, 30, 0.45);
       outline: none;
     }
 
@@ -418,6 +596,94 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 16px;
       background: rgba(255, 255, 255, 0.06);
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .preview-card {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 12px 30px rgba(8, 10, 30, 0.35);
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .preview-card h3 {
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .preview-card p {
+      color: #c8d2fb;
+      font-size: 0.92rem;
+      margin-bottom: 12px;
+    }
+
+    .preview-card:hover {
+      background: rgba(255, 255, 255, 0.09);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 18px 36px rgba(8, 10, 30, 0.45);
+    }
+
+    .project-thumb {
+      border-radius: 12px;
+      aspect-ratio: 16 / 9;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(125, 73, 255, 0.44), rgba(83, 255, 244, 0.22));
+    }
+
+    .project-thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5, 8, 20, 0.08), rgba(5, 8, 20, 0.5));
+    }
+
+    .project-thumb-label {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      z-index: 1;
+      color: #f0f5ff;
+      font-size: 0.83rem;
+      font-weight: 700;
+    }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #9ff3ff;
+      border: 1px solid rgba(159, 243, 255, 0.4);
+      background: rgba(125, 205, 255, 0.12);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 10px 0 12px;
+    }
+
+    .tag {
+      font-size: 0.74rem;
+      color: #d8e5ff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      padding: 2px 8px;
     }
 
     .contact-grid {
@@ -454,18 +720,36 @@
       }
 
       .stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
       }
 
       .grid,
       .contact-grid,
-      .archive-grid {
+      .archive-grid,
+      .preview-grid,
+      .featured-grid,
+      .capability-dashboard {
         grid-template-columns: 1fr;
       }
 
       .timeline-item {
-        grid-template-columns: 1fr;
-        gap: 4px;
+        width: calc(100% - 28px);
+        margin-left: 28px;
+      }
+
+      .timeline::before {
+        left: 6px;
+      }
+
+      .timeline-item:nth-child(odd),
+      .timeline-item:nth-child(even) {
+        margin-right: 0;
+      }
+
+      .timeline-item:nth-child(odd)::before,
+      .timeline-item:nth-child(even)::before {
+        left: -28px;
+        right: auto;
       }
 
       .hero-grid {
@@ -473,7 +757,17 @@
       }
 
       .hero-image {
-        width: min(100%, 280px);
+        width: 220px;
+        height: 220px;
+      }
+
+      .hero-image-ring {
+        width: 228px;
+        height: 228px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -516,7 +810,6 @@
         <li><a href="#archive">Archive</a></li>
         <li><a href="#cv">CV</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="whiteboard.html">Whiteboard</a></li>
       </ul>
     </nav>
   </div>
@@ -527,15 +820,17 @@
         <div>
           <p class="eyebrow">Portfolio</p>
           <h1 class="neon-text">Mauricio Montero</h1>
-          <p class="hero-title">AVP · AI &amp; Data Science · Digital Transformation</p>
+          <p class="hero-title">Data Analytics · Data Science · Digital Transformation AI</p>
           <p class="hero-location">Costa Rica · Open to Global Remote</p>
           <div class="hero-actions">
-            <a class="btn" href="#projects">View Featured Projects</a>
+            <a class="btn" href="#stats">View Analytics Snapshot</a>
             <a class="btn secondary" href="#cv">View CV</a>
           </div>
         </div>
         <div class="hero-image-wrap">
-          <img class="hero-image" src="images/mauricio-profile.png" alt="Portrait of Mauricio Montero">
+          <div class="hero-image-ring">
+            <img class="hero-image" src="images/mauricio-profile.png" alt="Portrait of Mauricio Montero">
+          </div>
         </div>
       </div>
     </section>
@@ -550,49 +845,72 @@
           <span class="stat-label">Years Experience</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">4</span>
+          <span class="stat-number">8+</span>
           <span class="stat-label">Global Companies</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">RAG</span>
-          <span class="stat-label">Research Focus</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">AVP</span>
-          <span class="stat-label">at Citi</span>
+          <span class="stat-number">25+</span>
+          <span class="stat-label">AI / BI Initiatives</span>
         </div>
       </div>
     </section>
 
     <section id="skills" class="glass panel">
       <div class="section-heading">
-        <h2>Skills</h2>
-        <p>Applied AI leadership across enterprise banking, retail, and education with an emphasis on practical deployment and measurable business impact.</p>
+        <h2>Capability Dashboard</h2>
+        <p>Data-driven decision making across global operations, specializing in analytics strategy, predictive modeling, and business impact optimization.</p>
       </div>
-      <div class="grid">
-        <article class="card">
-          <h3>Machine Learning &amp; AI</h3>
-          <p>FAISS, BM25, LangChain, Ollama, FastAPI</p>
+      <div class="capability-dashboard">
+        <article class="capability-tile">
+          <div class="capability-head"><strong>Data Analytics &amp; Business Intelligence</strong><span>Expert</span></div>
+          <div class="capability-bar"><span class="capability-fill" style="width:100%;"></span></div>
+          <ul>
+            <li>KPI Design &amp; Global Performance Tracking</li>
+            <li>Executive Dashboards (Tableau, Power BI)</li>
+            <li>Data Storytelling for Leadership Decision-Making</li>
+          </ul>
         </article>
-        <article class="card">
-          <h3>BI &amp; Visualization</h3>
-          <p>Tableau, Power BI</p>
+        <article class="capability-tile">
+          <div class="capability-head"><strong>Data Science &amp; Advanced Analytics</strong><span>Advanced</span></div>
+          <div class="capability-bar"><span class="capability-fill" style="width:92%;"></span></div>
+          <ul>
+            <li>Predictive Modeling (GBM, Regression, NLP)</li>
+            <li>Forecasting &amp; Simulation (ARIMA, scenario modeling)</li>
+            <li>Feature Engineering &amp; Model Evaluation</li>
+          </ul>
         </article>
-        <article class="card">
-          <h3>Data Engineering</h3>
-          <p>SQL, Alteryx, Dataiku, GCP, BigQuery</p>
+        <article class="capability-tile">
+          <div class="capability-head"><strong>Data Engineering &amp; Pipelines</strong><span>Strong</span></div>
+          <div class="capability-bar"><span class="capability-fill" style="width:84%;"></span></div>
+          <ul>
+            <li>SQL, Python, ETL Design</li>
+            <li>Alteryx, Dataiku</li>
+          </ul>
         </article>
-        <article class="card">
-          <h3>Process Automation</h3>
-          <p>Stylus Workspace AI Suite, RPA, ServiceNow</p>
+        <article class="capability-tile">
+          <div class="capability-head"><strong>AI &amp; Automation</strong><span>Strong</span></div>
+          <div class="capability-bar"><span class="capability-fill" style="width:84%;"></span></div>
+          <ul>
+            <li>Process Automation (RPA, ServiceNow, Stylus)</li>
+            <li>AI-driven anomaly detection</li>
+            <li>LLM + RAG systems</li>
+          </ul>
         </article>
-        <article class="card">
-          <h3>3D &amp; Immersive AI</h3>
-          <p>Unreal Engine 5, RAGAS, C++</p>
+        <article class="capability-tile">
+          <div class="capability-head"><strong>Business &amp; Strategy Alignment</strong><span>Advanced</span></div>
+          <div class="capability-bar"><span class="capability-fill" style="width:90%;"></span></div>
+          <ul>
+            <li>Data-driven decision making at enterprise scale</li>
+            <li>Translating business problems into analytical solutions</li>
+          </ul>
         </article>
-        <article class="card">
-          <h3>Leadership &amp; Teaching</h3>
-          <p>ULATINA professor</p>
+        <article class="capability-tile">
+          <div class="capability-head"><strong>Leadership &amp; Communication</strong><span>Advanced</span></div>
+          <div class="capability-bar"><span class="capability-fill" style="width:90%;"></span></div>
+          <ul>
+            <li>Executive communication &amp; insight delivery</li>
+            <li>Graduate-level teaching (ULATINA)</li>
+          </ul>
         </article>
       </div>
     </section>
@@ -605,31 +923,94 @@
         <article class="timeline-item">
           <div class="timeline-date">Mar 2025 - Present</div>
           <div>
-            <h3 class="timeline-role">Assistant Vice President, AI &amp; Data Science · Citi</h3>
+            <h3 class="timeline-role">Assistant Vice President - Citi</h3>
+            <ul>
+              <li>Leading global payroll analytics transformation across 90+ countries with enterprise operating complexity.</li>
+              <li>Built executive KPI systems for payroll risk, compliance, and performance decision support.</li>
+              <li>Supporting global payroll automation initiatives across enterprise operations.</li>
+              <li>Contributing to analytics, controls, and dashboard solutions for payroll transformation.</li>
+              <li>Partnering with business and technology teams to improve KPI visibility and operational transparency.</li>
+            </ul>
           </div>
         </article>
         <article class="timeline-item">
           <div class="timeline-date">Oct 2025 - Present</div>
           <div>
             <h3 class="timeline-role">Professor · ULATINA</h3>
+            <ul>
+              <li>Deliver graduate programs on analytics strategy and data-driven executive decision making.</li>
+              <li>Mentor leaders on practical ML adoption and business impact translation.</li>
+            </ul>
           </div>
         </article>
         <article class="timeline-item">
           <div class="timeline-date">Jun 2024 - Mar 2025</div>
           <div>
             <h3 class="timeline-role">Senior Data Analyst · Sysco</h3>
+            <ul>
+              <li>Built a pricing optimization ML model that improved contract profitability prioritization.</li>
+              <li>Delivered forecasting and analytics automation products for faster commercial decisions.</li>
+            </ul>
           </div>
         </article>
         <article class="timeline-item">
           <div class="timeline-date">Nov 2023 - Jun 2024</div>
           <div>
             <h3 class="timeline-role">RevOps Analyst II · Equifax</h3>
+            <ul>
+              <li>Built classifier systems for e-commerce account segmentation and market targeting.</li>
+              <li>Developed revenue forecasting models that improved planning and pipeline visibility.</li>
+            </ul>
           </div>
         </article>
         <article class="timeline-item">
           <div class="timeline-date">Dec 2021 - Nov 2023</div>
           <div>
             <h3 class="timeline-role">Pricing Analyst · Walmart</h3>
+            <ul>
+              <li>Built pricing analytics products and dashboards for category and margin performance monitoring.</li>
+              <li>Delivered ETL and geospatial competitor insights to support high-impact commercial decisions.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">Oct 2021 - Dec 2021</div>
+          <div>
+            <h3 class="timeline-role">Associate Programmer · Labcorp Drug Development</h3>
+            <ul>
+              <li>Developed C# EDC customizations to improve clinical data quality and reporting readiness.</li>
+              <li>Supported structured data capture workflows for regulated study environments.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">Jun 2021 - Oct 2021</div>
+          <div>
+            <h3 class="timeline-role">Solution Architect Intern · Hewlett Packard Enterprise</h3>
+            <ul>
+              <li>Built solution proposals aligning architecture, costs, and business outcomes.</li>
+              <li>Supported enterprise pre-sales analytics and technical evaluation activities.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">Dec 2018 - Jun 2021</div>
+          <div>
+            <h3 class="timeline-role">Fleet Management Engineer · Hewlett Packard</h3>
+            <ul>
+              <li>Automated printer fleet operations using Python, reducing repetitive manual workload.</li>
+              <li>Built service analytics dashboards for performance, incident tracking, and operational control.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">Jan 2016 - Feb 2017</div>
+          <div>
+            <h3 class="timeline-role">Kindle Tech Support · Amazon</h3>
+            <ul>
+              <li>Used customer feedback analytics to improve support quality and team outcomes.</li>
+              <li>Built a foundation in high-volume technical operations and service excellence.</li>
+            </ul>
           </div>
         </article>
       </div>
@@ -637,32 +1018,61 @@
 
     <section id="projects" class="glass panel">
       <div class="section-heading">
-        <h2>Projects</h2>
+        <h2>Featured Projects</h2>
+        <p>High-impact analytics and automation implementations with enterprise business outcomes.</p>
       </div>
-      <div class="project-list">
+      <div class="featured-grid">
         <article class="project-item">
-          <h3>Conversational RAG in UE5</h3>
-          <p>FAISS + BM25 + RRF + CRAG for immersive, context-aware AI interactions.</p>
+          <h3><span class="featured-icon">💰</span>Pricing Optimization Model - Walmart</h3>
+          <ul>
+            <li>Optimized price suggestion models aligned with business strategy.</li>
+            <li>Migrated ETL pipelines from Alteryx to Dataiku.</li>
+            <li>Built analytics workflows and Power BI dashboards for decision-making.</li>
+            <li>Acted as superuser and technical liaison for analytics solutions.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Pricing</span><span class="tag">ML</span><span class="tag">ETL</span><span class="tag">Power BI</span></div>
         </article>
         <article class="project-item">
-          <h3>Fast Track Contract Builder</h3>
-          <p>Gradient Boosting + NLP pipeline for rapid contract drafting and quality checks.</p>
+          <h3><span class="featured-icon">📊</span>Enterprise Data Visualization - HP</h3>
+          <ul>
+            <li>Built centralized SSMS database integrating ServiceNow and CDAX data.</li>
+            <li>Led data cleaning and transformation workflows.</li>
+            <li>Developed BI dashboards for operational performance tracking and pattern recognition.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">SQL</span><span class="tag">BI</span><span class="tag">Data Engineering</span><span class="tag">Analytics</span></div>
         </article>
         <article class="project-item">
-          <h3>GPC Dashboard</h3>
-          <p>Tableau + Stylus AI implementation for executive-ready business performance insights.</p>
+          <h3><span class="featured-icon">⚙️</span>Automation Engineering - HP</h3>
+          <ul>
+            <li>Developed Python scripts for firmware deployment automation.</li>
+            <li>Automated Web JetAdmin group script generation.</li>
+            <li>Achieved approximately 96% reduction in execution time.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Python</span><span class="tag">Automation</span><span class="tag">Efficiency</span></div>
         </article>
         <article class="project-item">
-          <h3>E-Commerce ML Classifier</h3>
-          <p>ARIMA-based forecasting and classification strategy for product performance signals.</p>
+          <h3><span class="featured-icon">🎓</span>Analytics Training &amp; Enablement - HP</h3>
+          <ul>
+            <li>Designed training content for fleet management engineers.</li>
+            <li>Standardized onboarding knowledge across teams.</li>
+            <li>Improved internal analytics and technical capabilities.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Leadership</span><span class="tag">Training</span><span class="tag">Analytics</span></div>
         </article>
         <article class="project-item">
-          <h3>Geospatial Competitor Analysis</h3>
-          <p>DBSCAN + GeoPandas model to identify competitive clusters and white-space opportunities.</p>
+          <h3><span class="featured-icon">📦</span>Customer Data Mining - Amazon</h3>
+          <ul>
+            <li>Analyzed customer feedback and support call data at scale.</li>
+            <li>Identified recurring patterns in negative experiences.</li>
+            <li>Delivered actionable insights to improve team performance.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Data Mining</span><span class="tag">Analytics</span><span class="tag">Operations</span></div>
         </article>
         <article class="project-item">
-          <h3>ULATINA Executive Curriculum</h3>
-          <p>Designed practical, industry-facing AI and analytics curriculum for executive learners.</p>
+          <h3><span class="featured-icon">🧠</span>UNIR Innovation Research - Conversational RAG in 3D</h3>
+          <p>Co-authored innovation project integrating conversational AI and interactive 3D NPC workflows for immersive learning scenarios.</p>
+          <p><a class="btn secondary" id="research-pdf-link" href="./Seminario_Innovacion_RAG_3D.pdf" target="_blank" rel="noopener noreferrer">Open Research PDF</a></p>
+          <div class="tag-row"><span class="tag">RAG</span><span class="tag">3D</span><span class="tag">Research</span></div>
         </article>
       </div>
     </section>
@@ -674,33 +1084,86 @@
       </div>
       <div class="archive-grid">
         <a class="archive-link" href="1-Fundamentos Modelos de Regresión.html">
-          1 - Fundamentos Modelos de Regresion
-          <small>Regression fundamentals project page</small>
+          📈 Regression Modeling Fundamentals
+          <small>End-to-end regression modeling including feature selection, validation, and performance evaluation.</small>
         </a>
         <a class="archive-link" href="2-Preprocesamiento de Datos.html">
-          2 - Preprocesamiento de Datos
-          <small>Data preprocessing project page</small>
+          🧹 Data Preprocessing Pipeline
+          <small>Robust preprocessing workflow for cleaning, transforming, and preparing data for modeling accuracy.</small>
         </a>
         <a class="archive-link" href="Practica_1.html">
-          Practica 1
-          <small>Applied data analysis notebook export</small>
+          📊 Exploratory Data Analysis
+          <small>Insight-focused exploratory analysis with trend diagnostics and decision-support visuals.</small>
         </a>
         <a class="archive-link" href="Practica_2.html">
-          Practica 2
-          <small>Advanced analysis and modeling notebook export</small>
+          ⚙️ Advanced Modeling &amp; Feature Engineering
+          <small>Feature engineering and advanced modeling techniques for stronger predictive performance.</small>
         </a>
         <a class="archive-link" href="walmartSales.html">
-          Walmart Sales Dashboard
-          <small>Power BI and pricing analytics project</small>
+          📉 Walmart Sales Dashboard
+          <small>Business dashboarding solution for pricing visibility, category performance, and actionability.</small>
         </a>
         <a class="archive-link" href="SQL_for_data_analysis.html">
-          SQL Data Analysis Presentation
-          <small>SQL portfolio presentation page</small>
+          🗄️ SQL Analytics Case Study
+          <small>SQL-based analytics case demonstrating structured querying for executive reporting and insights.</small>
         </a>
         <a class="archive-link" href="movies_analysis.html">
-          Movies Analysis
-          <small>Python movie-rating analysis notebook export</small>
+          🎬 Movie Ratings Analysis
+          <small>Comparative rating analysis using Python to uncover performance drivers and audience patterns.</small>
         </a>
+      </div>
+      <div class="section-heading" style="margin-top:18px;">
+        <p>Project previews with polished summaries and direct access.</p>
+      </div>
+      <div class="preview-grid">
+        <article class="preview-card">
+          <span class="card-badge">Notebook Project</span>
+          <div class="project-thumb"><span class="project-thumb-label">Regression Modeling</span></div>
+          <h3>Regression Modeling Fundamentals 📈</h3>
+          <p>Complete modeling flow from exploratory analysis to regression validation and business interpretation.</p>
+          <div class="tag-row"><span class="tag">Regression</span><span class="tag">Feature Selection</span><span class="tag">Validation</span></div>
+            <a class="btn secondary" href="1-Fundamentos Modelos de Regresión.html">Open Project</a>
+        </article>
+        <article class="preview-card">
+          <span class="card-badge">Notebook Project</span>
+          <div class="project-thumb"><span class="project-thumb-label">Data Preparation</span></div>
+          <h3>Data Preprocessing Pipeline 🧹</h3>
+          <p>Data quality, transformation, and feature preparation processes built for downstream analytics reliability.</p>
+          <div class="tag-row"><span class="tag">ETL</span><span class="tag">Cleaning</span><span class="tag">Transformation</span></div>
+            <a class="btn secondary" href="2-Preprocesamiento de Datos.html">Open Project</a>
+        </article>
+        <article class="preview-card">
+          <span class="card-badge">Notebook Project</span>
+          <div class="project-thumb"><span class="project-thumb-label">EDA Insights</span></div>
+          <h3>Exploratory Data Analysis 📊</h3>
+          <p>Analytical exploration focused on trend detection, segmentation logic, and insight communication.</p>
+          <div class="tag-row"><span class="tag">EDA</span><span class="tag">Trends</span><span class="tag">Insights</span></div>
+            <a class="btn secondary" href="Practica_1.html">Open Project</a>
+        </article>
+        <article class="preview-card">
+          <span class="card-badge">Notebook Project</span>
+          <div class="project-thumb"><span class="project-thumb-label">Feature Engineering</span></div>
+          <h3>Advanced Modeling &amp; Feature Engineering ⚙️</h3>
+          <p>Advanced model experimentation with engineered features to improve predictive signal quality.</p>
+          <div class="tag-row"><span class="tag">Modeling</span><span class="tag">Features</span><span class="tag">Performance</span></div>
+            <a class="btn secondary" href="Practica_2.html">Open Project</a>
+        </article>
+        <article class="preview-card">
+          <span class="card-badge">Case Study</span>
+          <div class="project-thumb"><span class="project-thumb-label">SQL Analysis</span></div>
+          <h3>SQL Analytics Case Study 🗄️</h3>
+          <p>Structured SQL analysis applied to business questions with clear KPI reporting outputs.</p>
+          <div class="tag-row"><span class="tag">SQL</span><span class="tag">KPI Reporting</span><span class="tag">Query Design</span></div>
+            <a class="btn secondary" href="SQL_for_data_analysis.html">Open Project</a>
+        </article>
+        <article class="preview-card">
+          <span class="card-badge">Case Study</span>
+          <div class="project-thumb"><span class="project-thumb-label">Ratings Intelligence</span></div>
+          <h3>Movie Ratings Analysis 🎬</h3>
+          <p>Comparative analytics project identifying rating trends and behavioral patterns in entertainment data.</p>
+          <div class="tag-row"><span class="tag">Python</span><span class="tag">Comparative Analysis</span><span class="tag">Segmentation</span></div>
+            <a class="btn secondary" href="movies_analysis.html">Open Project</a>
+        </article>
       </div>
     </section>
 
@@ -731,7 +1194,7 @@
   </main>
 
   <footer>
-    <p>&copy; <span id="year"></span> Mauricio Montero. Built with neon glassmorphism aesthetic.</p>
+    <p>&copy; <span id="year"></span> Mauricio Montero.</p>
   </footer>
 
   <script>
@@ -749,6 +1212,27 @@
       target.style.transitionDelay = `${index * 80}ms`;
       observer.observe(target);
     });
+
+    const researchButton = document.getElementById("research-pdf-link");
+    if (researchButton) {
+      fetch(researchButton.getAttribute("href"), { method: "HEAD" })
+        .then((response) => {
+          if (!response.ok) {
+            researchButton.textContent = "Research PDF coming soon";
+            researchButton.setAttribute("aria-disabled", "true");
+            researchButton.removeAttribute("href");
+            researchButton.style.opacity = "0.65";
+            researchButton.style.pointerEvents = "none";
+          }
+        })
+        .catch(() => {
+          researchButton.textContent = "Research PDF coming soon";
+          researchButton.setAttribute("aria-disabled", "true");
+          researchButton.removeAttribute("href");
+          researchButton.style.opacity = "0.65";
+          researchButton.style.pointerEvents = "none";
+        });
+    }
 
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>

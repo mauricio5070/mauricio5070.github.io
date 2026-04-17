@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 <html>
 <head>
     <title>SQL Data Analysis Presentation</title>
@@ -30,16 +30,45 @@
             border: none;
         }
     </style>
+<style id="portfolio-theme-style">
+:root{--bg:#eef2fb;--text:#111827;--muted:#4b5563;--border:#d9deeb;--accent:linear-gradient(115deg,#ff7a00,#ff2d95,#7d49ff)}
+html,body{background:var(--bg)!important;color:var(--text)!important;font-family:"DM Sans",Arial,sans-serif!important}
+body{margin:0!important;padding:96px 16px 26px!important}
+.portfolio-theme-nav{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(1120px,94vw);z-index:9999;border:1px solid var(--border);background:rgba(255,255,255,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:16px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 26px rgba(16,24,40,.12)}
+.portfolio-theme-nav strong{font-family:"Syne",Arial,sans-serif;font-size:1rem;letter-spacing:.3px;color:#111827}
+.portfolio-theme-nav .links{display:flex;gap:8px;flex-wrap:wrap}
+.portfolio-theme-nav a{text-decoration:none;color:#fff;padding:8px 12px;border-radius:999px;border:0;font-size:.82rem;background:var(--accent);box-shadow:0 8px 18px rgba(125,73,255,.28);transition:transform .18s ease,box-shadow .18s ease}
+.portfolio-theme-nav a:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(125,73,255,.36)}
+.portfolio-theme-shell{max-width:1100px;margin:0 auto;border-radius:18px;border:1px solid var(--border);background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.12);padding:30px;overflow:auto}
+.portfolio-theme-shell *{color:inherit}
+.jp-Notebook,.reveal,.slides{background:transparent!important}
+img{max-width:100%;height:auto}
+@media (max-width:760px){body{padding-top:120px!important}.portfolio-theme-nav{align-items:flex-start;flex-direction:column;gap:8px}.portfolio-theme-shell{padding:18px}}
+</style>
 </head>
 <body>
+<div class="portfolio-theme-nav" id="portfolio-theme-nav">
+  <strong>Mauricio Montero</strong>
+  <div class="links">
+    <a href="index.html">← Back to Portfolio</a>
+    <a href="index.html#projects">Featured Projects</a>
+    <a href="index.html#archive">Archive</a>
+    <a href="index.html#cv">CV</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+</div>
+<main class="portfolio-theme-shell">
     <!-- Back to Index Button -->
     <div class="back-button">
         <a href="index.html">
-            <button>&larr; Home</button>
+            
         </a>
     </div>
 
     <!-- Embedded PowerPoint Presentation -->
     <iframe src="SQL_Data_Analysis.pdf" allow="fullscreen"></iframe>
+</main>
 </body>
 </html>
+
+
