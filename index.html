@@ -1,1240 +1,1378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mauricio Montero | Data Analytics · Data Science · AI Transformation</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #050814;
-      --surface: rgba(255, 255, 255, 0.07);
-      --surface-strong: rgba(255, 255, 255, 0.12);
-      --border: rgba(255, 255, 255, 0.18);
-      --text: #f3f4f8;
-      --muted: #c8c6d8;
-      --accent: linear-gradient(115deg, #ff7a00 0%, #ff2d95 52%, #7d49ff 100%);
-      --shadow: 0 24px 60px rgba(8, 10, 26, 0.55);
-      --radius: 24px;
-      --nav-height: 74px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: "DM Sans", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    .bg-liquid {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(78px);
-      opacity: 0.65;
-      mix-blend-mode: screen;
-      animation: float 15s ease-in-out infinite;
-    }
-
-    .blob.one {
-      width: 420px;
-      height: 420px;
-      left: -120px;
-      top: -80px;
-      background: #7d49ff;
-    }
-
-    .blob.two {
-      width: 380px;
-      height: 380px;
-      right: -100px;
-      top: 120px;
-      background: #ff54d9;
-      animation-delay: -4s;
-    }
-
-    .blob.three {
-      width: 360px;
-      height: 360px;
-      left: 22%;
-      bottom: -160px;
-      background: #53b8ff;
-      animation-delay: -8s;
-    }
-
-    .blob.four {
-      width: 300px;
-      height: 300px;
-      right: 24%;
-      bottom: -120px;
-      background: #53fff4;
-      animation-delay: -10s;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-      50% { transform: translate3d(0, -40px, 0) scale(1.12); }
-    }
-
-    .container {
-      width: min(1140px, 92vw);
-      margin: 0 auto;
-    }
-
-    .glass {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-radius: var(--radius);
-    }
-
-    .navbar-wrap {
-      position: sticky;
-      top: 10px;
-      z-index: 40;
-      padding-top: 10px;
-    }
-
-    .navbar {
-      min-height: var(--nav-height);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 22px;
-    }
-
-    .brand {
-      font-family: "Syne", sans-serif;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      font-size: 1.1rem;
-    }
-
-    .nav-links {
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: flex-end;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text);
-      font-size: 0.92rem;
-      font-weight: 500;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      transition: all 0.22s ease;
-    }
-
-    .nav-links a:hover,
-    .nav-links a:focus {
-      border-color: var(--border);
-      background: rgba(255, 255, 255, 0.08);
-      outline: none;
-    }
-
-    main {
-      padding: 28px 0 52px;
-    }
-
-    section {
-      margin-top: 24px;
-    }
-
-    .panel {
-      padding: clamp(20px, 3vw, 34px);
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .panel.revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .eyebrow {
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-size: 0.77rem;
-      margin-bottom: 10px;
-    }
-
-    h1, h2, h3 {
-      font-family: "Syne", sans-serif;
-      line-height: 1.14;
-    }
-
-    h1 {
-      font-size: clamp(2.1rem, 7vw, 4.3rem);
-      margin-bottom: 10px;
-      letter-spacing: 0.4px;
-    }
-
-    .neon-text {
-      background: var(--accent);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 40px rgba(112, 118, 255, 0.2);
-    }
-
-    .hero-title {
-      font-size: clamp(1.04rem, 2.3vw, 1.3rem);
-      color: #d6e0ff;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.75fr);
-      gap: 22px;
-      align-items: center;
-    }
-
-    .hero-image-wrap {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      padding-top: 20px;
-    }
-
-    .hero-image-ring {
-      width: 258px;
-      height: 258px;
-      border-radius: 50%;
-      padding: 4px;
-      background: var(--accent);
-      box-shadow: 0 18px 44px rgba(6, 12, 36, 0.72);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hero-image {
-      width: 250px;
-      height: 250px;
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.18);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-      object-fit: cover;
-      object-position: center 30%;
-    }
-
-    .hero-location {
-      color: var(--muted);
-      font-size: 0.98rem;
-    }
-
-    .hero-actions {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      color: #ffffff;
-      background: var(--accent);
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.92rem;
-      box-shadow: 0 10px 24px rgba(140, 61, 180, 0.36);
-      transition: transform 0.22s ease, box-shadow 0.22s ease;
-    }
-
-    .btn:hover,
-    .btn:focus {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgba(140, 61, 180, 0.46);
-    }
-
-    .btn.secondary {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(180px, 1fr));
-      gap: 14px;
-    }
-
-    .stat-item {
-      padding: 18px 14px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      text-align: center;
-    }
-
-    .stat-number {
-      display: block;
-      font-family: "Syne", sans-serif;
-      font-size: clamp(1.2rem, 3vw, 1.8rem);
-      margin-bottom: 2px;
-      color: #f4f7ff;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 0.86rem;
-    }
-
-    .capability-dashboard {
-      margin-top: 8px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .capability-tile {
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 16px;
-    }
-
-    .capability-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .capability-item {
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 12px;
-    }
-
-    .capability-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 7px;
-      gap: 8px;
-    }
-
-    .capability-head strong {
-      color: #eef2ff;
-      font-size: 0.9rem;
-    }
-
-    .capability-head span {
-      color: #8ef0ff;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .capability-bar {
-      width: 100%;
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.16);
-      overflow: hidden;
-    }
-
-    .capability-fill {
-      display: block;
-      height: 100%;
-      border-radius: 999px;
-      background: var(--accent);
-      transform-origin: left center;
-      animation: fillGrow 1s ease both;
-    }
-
-    @keyframes fillGrow {
-      from { transform: scaleX(0.1); opacity: 0.65; }
-      to { transform: scaleX(1); opacity: 1; }
-    }
-
-    .section-heading {
-      margin-bottom: 16px;
-    }
-
-    .section-heading h2 {
-      font-size: clamp(1.4rem, 3.2vw, 2.3rem);
-      margin-bottom: 8px;
-    }
-
-    .section-heading p {
-      color: var(--muted);
-      max-width: 800px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 18px;
-      padding: 16px;
-    }
-
-    .card h3 {
-      font-size: 1.05rem;
-      margin-bottom: 6px;
-      color: #f0f3ff;
-    }
-
-    .card p,
-    .card li {
-      color: #c8d0f8;
-      font-size: 0.95rem;
-    }
-
-    .card ul {
-      margin-left: 18px;
-      margin-top: 8px;
-      display: grid;
-      gap: 5px;
-    }
-
-    .timeline {
-      position: relative;
-      display: grid;
-      gap: 16px;
-      padding: 8px 0;
-    }
-
-    .timeline::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 8px;
-      bottom: 8px;
-      width: 2px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, rgba(125, 73, 255, 0.7), rgba(83, 255, 244, 0.7));
-      box-shadow: 0 0 22px rgba(116, 157, 255, 0.5);
-    }
-
-    .timeline-item {
-      position: relative;
-      width: calc(50% - 22px);
-      margin-left: auto;
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-    }
-
-    .timeline-item:nth-child(odd) {
-      margin-left: 0;
-      margin-right: auto;
-    }
-
-    .timeline-item::before {
-      content: "";
-      position: absolute;
-      top: 22px;
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: #8ff5ff;
-      background: #8ff5ff;
-      box-shadow: 0 0 12px rgba(131, 218, 255, 0.7);
-      border: 2px solid rgba(10, 20, 48, 0.9);
-    }
-
-    .timeline-item:nth-child(odd)::before {
-      right: -29px;
-    }
-
-    .timeline-item:nth-child(even)::before {
-      left: -29px;
-    }
-
-    .timeline-date {
-      color: #9fb1ff;
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .timeline-role {
-      font-family: "Syne", sans-serif;
-      color: #eef2ff;
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
-
-    .timeline-item ul {
-      margin-left: 18px;
-      display: grid;
-      gap: 4px;
-      color: #cfd8ff;
-      font-size: 0.93rem;
-    }
-
-    .project-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .project-item {
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.05);
-      box-shadow: 0 12px 30px rgba(8, 10, 30, 0.35);
-      color: #e6edff;
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .project-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 18px 36px rgba(8, 10, 30, 0.45);
-    }
-
-    .project-item h3 {
-      margin-bottom: 4px;
-      font-size: 1.02rem;
-      color: #f0f5ff;
-    }
-
-    .project-item p {
-      color: #c8d2fb;
-      font-size: 0.94rem;
-    }
-
-    .project-item ul {
-      margin-left: 18px;
-      color: #d8e5ff;
-      margin-bottom: 10px;
-      display: grid;
-      gap: 4px;
-    }
-
-    .featured-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 12px;
-    }
-
-    .featured-icon {
-      font-size: 1.2rem;
-      margin-right: 6px;
-    }
-
-    .archive-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .archive-link {
-      display: block;
-      text-decoration: none;
-      color: #e6edff;
-      border-radius: 14px;
-      padding: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.05);
-      box-shadow: 0 12px 30px rgba(8, 10, 30, 0.35);
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .archive-link:hover,
-    .archive-link:focus {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 18px 36px rgba(8, 10, 30, 0.45);
-      outline: none;
-    }
-
-    .archive-link small {
-      color: var(--muted);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .cv-frame {
-      width: 100%;
-      height: min(72vh, 900px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .preview-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .preview-card {
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 15px;
-      box-shadow: 0 12px 30px rgba(8, 10, 30, 0.35);
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .preview-card h3 {
-      margin-bottom: 6px;
-      font-size: 1rem;
-    }
-
-    .preview-card p {
-      color: #c8d2fb;
-      font-size: 0.92rem;
-      margin-bottom: 12px;
-    }
-
-    .preview-card:hover {
-      background: rgba(255, 255, 255, 0.09);
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 18px 36px rgba(8, 10, 30, 0.45);
-    }
-
-    .project-thumb {
-      border-radius: 12px;
-      aspect-ratio: 16 / 9;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      margin-bottom: 10px;
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, rgba(125, 73, 255, 0.44), rgba(83, 255, 244, 0.22));
-    }
-
-    .project-thumb::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(5, 8, 20, 0.08), rgba(5, 8, 20, 0.5));
-    }
-
-    .project-thumb-label {
-      position: absolute;
-      left: 12px;
-      bottom: 10px;
-      z-index: 1;
-      color: #f0f5ff;
-      font-size: 0.83rem;
-      font-weight: 700;
-    }
-
-    .card-badge {
-      display: inline-block;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: #9ff3ff;
-      border: 1px solid rgba(159, 243, 255, 0.4);
-      background: rgba(125, 205, 255, 0.12);
-      padding: 2px 8px;
-      border-radius: 999px;
-      margin-bottom: 8px;
-    }
-
-    .tag-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin: 10px 0 12px;
-    }
-
-    .tag {
-      font-size: 0.74rem;
-      color: #d8e5ff;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 999px;
-      padding: 2px 8px;
-    }
-
-    .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 6px;
-    }
-
-    .contact-grid a,
-    .contact-grid span {
-      display: block;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.06);
-      color: #deE6ff;
-      text-decoration: none;
-      word-break: break-word;
-    }
-
-    footer {
-      margin: 20px auto 30px;
-      color: #9faad8;
-      text-align: center;
-      font-size: 0.88rem;
-    }
-
-    @media (max-width: 940px) {
-      .navbar {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .grid,
-      .contact-grid,
-      .archive-grid,
-      .preview-grid,
-      .featured-grid,
-      .capability-dashboard {
-        grid-template-columns: 1fr;
-      }
-
-      .timeline-item {
-        width: calc(100% - 28px);
-        margin-left: 28px;
-      }
-
-      .timeline::before {
-        left: 6px;
-      }
-
-      .timeline-item:nth-child(odd),
-      .timeline-item:nth-child(even) {
-        margin-right: 0;
-      }
-
-      .timeline-item:nth-child(odd)::before,
-      .timeline-item:nth-child(even)::before {
-        left: -28px;
-        right: auto;
-      }
-
-      .hero-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-image {
-        width: 220px;
-        height: 220px;
-      }
-
-      .hero-image-ring {
-        width: 228px;
-        height: 228px;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 560px) {
-      :root {
-        --radius: 18px;
-      }
-
-      .nav-links {
-        gap: 5px;
-      }
-
-      .nav-links a {
-        font-size: 0.82rem;
-        padding: 7px 10px;
-      }
-
-      .panel {
-        padding: 18px 15px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mauricio Montero — Data Analyst · Data Scientist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #06080f;
+    --bg-2: #0a0d18;
+    --ink: #e8ecf5;
+    --ink-dim: #a6adc0;
+    --ink-mute: #6b7285;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(255,255,255,0.18);
+    --glass: rgba(255,255,255,0.05);
+    --glass-2: rgba(255,255,255,0.08);
+    --accent: #7de2d1;
+    --accent-2: #9cb8ff;
+    --pos: #7de2a8;
+    --radius: 18px;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Space Grotesk", Inter, system-ui, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    min-height:100vh;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a{color: inherit;}
+
+  /* ===================== Backdrop (crisp, SVG-based) ===================== */
+  .backdrop{
+    position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none;
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(125,226,209,0.12), transparent 55%),
+      radial-gradient(1000px 600px at 110% 5%, rgba(156,184,255,0.10), transparent 55%),
+      radial-gradient(900px 600px at 50% 120%, rgba(125,226,209,0.08), transparent 55%),
+      linear-gradient(180deg, #05070d 0%, #06080f 40%, #070a12 100%);
+  }
+  .backdrop-grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 50% 20%, #000 40%, transparent 85%);
+    animation: gridDrift 60s linear infinite;
+  }
+  @keyframes gridDrift {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 64px 64px, 64px 64px; }
+  }
+  .backdrop-dots{
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1.2px);
+    background-size: 4px 4px;
+    mix-blend-mode: overlay; opacity: 0.4;
+  }
+  .backdrop-svg{
+    position:absolute; inset:0; width:100%; height:100%;
+    opacity: 0.35;
+  }
+  .blob{
+    position:absolute; border-radius: 50%;
+    filter: blur(90px); opacity: 0.35; mix-blend-mode: screen;
+    animation: blobFloat 22s ease-in-out infinite;
+  }
+  .blob.t{ width:540px; height:540px; top: -160px; left: -160px; background: #1f9da0;}
+  .blob.p{ width:420px; height:420px; top: 10%; right: -120px; background: #3a4da8; animation-delay: -6s;}
+  .blob.b{ width:500px; height:500px; bottom: -200px; left: 30%; background: #12a58c; animation-delay: -12s;}
+  @keyframes blobFloat {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50%     { transform: translate3d(30px,-40px,0) scale(1.08); }
+  }
+
+  .container{width:min(1200px, 94vw); margin: 0 auto;}
+
+  /* ===================== Topbar ===================== */
+  .topbar{
+    position: sticky; top: 0; z-index: 40;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    background: rgba(6,8,15,0.6);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 0; gap: 20px;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--mono); font-size: 13px; color: var(--ink-dim);
+    letter-spacing: 0.02em;
+  }
+  .logo .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 14px var(--accent);
+  }
+  .topbar nav{
+    display:flex; gap: 2px; font-family: var(--mono); font-size: 12px;
+    flex-wrap: wrap; justify-content: flex-end;
+  }
+  .topbar nav a{
+    text-decoration:none; color: var(--ink-dim);
+    padding: 8px 12px; border-radius: 8px;
+    transition: color .15s, background .15s;
+  }
+  .topbar nav a:hover,
+  .topbar nav a.active{ color: var(--ink); background: var(--glass);}
+
+  /* ===================== Glass ===================== */
+  .glass{
+    background: var(--glass);
+    border: 1px solid var(--line-strong);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  /* ===================== Section scaffold ===================== */
+  section.block{
+    padding: 72px 0 28px;
+    scroll-margin-top: 70px;
+  }
+  .block-head{
+    display:grid; grid-template-columns: 180px 1fr; gap: 32px;
+    margin-bottom: 24px;
+  }
+  .block-tag{
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding-top: 6px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .block-tag::before{
+    content:""; width: 28px; height: 1px; background: var(--accent);
+    margin-top: 10px; flex-shrink: 0;
+  }
+  .block-title h2{
+    font-family: var(--sans); font-weight: 600;
+    font-size: clamp(24px, 3vw, 34px); letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .block-title p{
+    color: var(--ink-dim); max-width: 780px; font-size: 15px;
+  }
+  .panel{ padding: clamp(20px, 3vw, 32px); }
+
+  /* ===================== Hero ===================== */
+  .hero{
+    padding-top: 64px; padding-bottom: 24px;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+    gap: 36px; align-items: center;
+  }
+  .hero-kicker{
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    display:inline-flex; align-items:center; gap:10px;
+    margin-bottom: 18px;
+  }
+  .hero-kicker::before{
+    content:""; width:28px; height:1px; background: var(--accent);
+  }
+  h1{
+    font-family: var(--sans); font-weight: 600;
+    font-size: clamp(34px, 5.2vw, 62px);
+    line-height: 1.03; letter-spacing: -0.025em;
+    max-width: 780px; margin-bottom: 18px;
+  }
+  h1 em{ font-style: normal; color: var(--accent); }
+  .hero-lede{
+    color: var(--ink-dim); font-size: 17px; max-width: 620px; margin-bottom: 26px;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap: 20px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding-top: 18px; border-top: 1px dashed var(--line);
+  }
+  .hero-meta b{ color: var(--ink); font-weight: 500; margin-right: 6px;}
+  .hero-actions{
+    margin-top: 22px; display:flex; flex-wrap: wrap; gap: 10px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap: 8px;
+    text-decoration: none; font-family: var(--sans); font-weight: 500;
+    font-size: 14px; padding: 11px 18px;
+    border-radius: 10px; border: 1px solid var(--accent);
+    background: rgba(125,226,209,0.12); color: var(--accent);
+    transition: background .15s, transform .15s;
+  }
+  .btn:hover{ background: rgba(125,226,209,0.2); transform: translateY(-1px);}
+  .btn.secondary{
+    color: var(--ink); border-color: var(--line-strong); background: var(--glass);
+  }
+  .btn.secondary:hover{ background: var(--glass-2);}
+  .btn .arr{ font-family: var(--mono); font-size: 12px;}
+
+  /* Circular portrait kept */
+  .portrait-wrap{
+    display:flex; justify-content: center; align-items: center;
+    position: relative;
+  }
+  .portrait-ring{
+    width: 280px; height: 280px; border-radius: 50%;
+    padding: 3px;
+    background: conic-gradient(from 140deg, rgba(125,226,209,0.8), rgba(156,184,255,0.4), rgba(125,226,209,0.2), rgba(125,226,209,0.8));
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(125,226,209,0.15);
+    position: relative;
+  }
+  .portrait-ring::before{
+    content:""; position:absolute; inset: -24px;
+    border: 1px dashed rgba(125,226,209,0.3);
+    border-radius: 50%;
+    animation: spin 40s linear infinite;
+  }
+  .portrait-ring::after{
+    content:""; position:absolute; inset: -48px;
+    border: 1px dashed rgba(156,184,255,0.15);
+    border-radius: 50%;
+    animation: spin 80s linear infinite reverse;
+  }
+  @keyframes spin{ to { transform: rotate(360deg);} }
+  .portrait-ring img{
+    width: 100%; height: 100%; border-radius: 50%;
+    object-fit: cover; object-position: center 25%;
+    display: block; background: #0a0d18;
+  }
+  .portrait-pin{
+    position:absolute; bottom: 12px; left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono); font-size: 10px; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: rgba(6,8,15,0.8);
+    padding: 4px 10px; border-radius: 999px;
+    border: 1px solid rgba(125,226,209,0.4);
+    backdrop-filter: blur(6px);
+  }
+
+  /* ===================== Highlights KPI strip ===================== */
+  .kpi-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .kpi{
+    padding: 20px; border: 1px solid var(--line); border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+  }
+  .kpi .label{
+    font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .kpi .big{
+    font-family: var(--sans); font-weight: 600; font-size: 40px;
+    letter-spacing: -0.02em; margin-top: 6px; line-height: 1;
+  }
+  .kpi .big span{ font-size: 16px; color: var(--ink-mute); font-weight: 500; margin-left: 6px;}
+  .kpi .note{
+    font-family: var(--mono); font-size: 11px; color: var(--ink-dim);
+    margin-top: 4px;
+  }
+  .spark{ width:100%; height: 48px; margin-top: 12px; display:block; }
+
+  /* ===================== Capability scorecard ===================== */
+  .skill-table{
+    width: 100%; border-collapse: collapse;
+    font-family: var(--sans);
+  }
+  .skill-table th, .skill-table td{
+    padding: 14px 14px; text-align: left;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .skill-table th{
+    font-family: var(--mono); font-size: 10px;
+    color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.14em;
+    font-weight: 500; padding-bottom: 10px;
+  }
+  .skill-table td.name{ font-weight: 500; color: var(--ink);}
+  .skill-table td.score{ font-family: var(--mono); color: var(--accent); font-weight: 500;}
+  .skill-table td.tools{ color: var(--ink-dim); font-size: 13px; font-family: var(--mono);}
+  .skill-bar{
+    width: 100%; height: 4px; background: rgba(255,255,255,0.06);
+    border-radius: 2px; overflow: hidden;
+  }
+  .skill-bar span{
+    display:block; height:100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 2px;
+  }
+  .skill-table tbody tr:hover td{ background: rgba(125,226,209,0.03);}
+
+  /* ===================== Gantt ===================== */
+  .gantt{ padding: 6px 2px; }
+  .gantt-axis{
+    display:grid; grid-template-columns: 220px 1fr;
+    font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .gantt-years{
+    display:grid; grid-template-columns: repeat(11, 1fr);
+    position: relative;
+  }
+  .gantt-years span{ padding-left: 4px;}
+  .gantt-row{
+    display:grid; grid-template-columns: 220px 1fr;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+    font-family: var(--sans); font-size: 13px;
+  }
+  .gantt-row:last-child{ border-bottom: 0; }
+  .gantt-row .role{ color: var(--ink); padding-right: 12px;}
+  .gantt-row .role small{
+    display:block; font-family: var(--mono); font-size: 10px;
+    color: var(--ink-mute); letter-spacing: 0.04em;
+    text-transform: uppercase; margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .gantt-track{
+    position: relative; height: 24px;
+    background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 9.09% 100%;
+  }
+  .gantt-bar{
+    position: absolute; top: 5px; height: 14px; border-radius: 3px;
+    background: linear-gradient(90deg, rgba(125,226,209,0.25), rgba(156,184,255,0.30));
+    border: 1px solid rgba(125,226,209,0.5);
+    display: flex; align-items: center; padding: 0 6px;
+    font-family: var(--mono); font-size: 9px; color: var(--ink);
+    letter-spacing: 0.04em;
+    overflow: hidden; white-space: nowrap;
+  }
+  .gantt-bar.current{
+    background: linear-gradient(90deg, rgba(125,226,209,0.55), rgba(125,226,209,0.2));
+    border-color: var(--accent);
+    box-shadow: 0 0 16px rgba(125,226,209,0.35);
+  }
+  .gantt-bar.tiny{ font-size: 0; padding: 0;}
+
+  /* Gantt tooltip */
+  .gantt-row{ position: relative; }
+  .gantt-bar{ cursor: pointer; transition: transform .15s, box-shadow .2s, background .2s; }
+  .gantt-bar:hover{
+    transform: translateY(-1px);
+    background: linear-gradient(90deg, rgba(125,226,209,0.45), rgba(156,184,255,0.4));
+    box-shadow: 0 0 18px rgba(125,226,209,0.35);
+  }
+  .gantt-tip{
+    position: absolute; z-index: 20;
+    left: 240px; top: 100%;
+    width: min(520px, 80%);
+    margin-top: 4px;
+    background: rgba(10,13,24,0.95);
+    border: 1px solid rgba(125,226,209,0.4);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: var(--sans); font-size: 13px; color: var(--ink-dim);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transform: translateY(-6px);
+    transition: opacity .18s ease, transform .18s ease;
+    backdrop-filter: blur(12px);
+  }
+  .gantt-tip strong{
+    display:block; font-family: var(--mono); font-size: 10px; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; font-weight: 500;
+  }
+  .gantt-tip ul{ list-style: none; display: grid; gap: 5px;}
+  .gantt-tip li{
+    padding-left: 14px; position: relative; font-size: 12.5px; line-height: 1.5;
+  }
+  .gantt-tip li::before{
+    content:""; position: absolute; left: 0; top: 8px;
+    width: 5px; height: 1px; background: var(--accent);
+  }
+  .gantt-row:hover .gantt-tip{
+    opacity: 1; pointer-events: auto; transform: translateY(0);
+  }
+  @media (max-width: 900px){
+    .gantt-tip{ left: 140px; width: calc(100% - 150px); font-size: 12px; }
+  }
+
+  /* ===================== Toolbelt ===================== */
+  .toolbelt{
+    display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+  }
+  .tool{
+    padding: 14px 10px; border: 1px solid var(--line); border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    text-align:center;
+    transition: border-color .15s, background .15s, transform .15s;
+  }
+  .tool:hover{
+    border-color: rgba(125,226,209,0.4);
+    background: rgba(125,226,209,0.04);
+    transform: translateY(-2px);
+  }
+  .tool-glyph{
+    width: 40px; height: 40px; margin: 0 auto 8px;
+    display:flex; align-items:center; justify-content:center;
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    font-family: var(--mono); font-size: 13px; font-weight: 600;
+    color: var(--accent);
+    background: rgba(125,226,209,0.05);
+  }
+  .tool .name{ font-family: var(--sans); font-size: 13px; font-weight: 500;}
+  .tool .lvl{
+    font-family: var(--mono); font-size: 9px; color: var(--ink-mute);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px;
+  }
+
+  /* Tool tooltip */
+  .tool{ position: relative; cursor: pointer;}
+  .tool-tip{
+    position: absolute; z-index: 20;
+    bottom: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    min-width: 180px; max-width: 240px;
+    background: rgba(10,13,24,0.96);
+    border: 1px solid rgba(125,226,209,0.4);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: var(--sans); font-size: 11.5px; color: var(--ink-dim);
+    line-height: 1.4;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+    backdrop-filter: blur(10px);
+  }
+  .tool-tip::after{
+    content:""; position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(125,226,209,0.4);
+  }
+  .tool:hover .tool-tip{
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+
+  /* ===================== Projects ===================== */
+  .project-grid{
+    display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  }
+  .project{
+    border: 1px solid var(--line-strong); border-radius: 14px;
+    overflow: hidden; background: rgba(255,255,255,0.03);
+    display: flex; flex-direction: column;
+    transition: transform .2s, border-color .2s;
+  }
+  .project:hover{
+    transform: translateY(-3px);
+    border-color: rgba(125,226,209,0.4);
+  }
+  .project-thumb{
+    height: 160px; position: relative; overflow: hidden;
+    background: #0a0d18;
+    border-bottom: 1px solid var(--line);
+  }
+  .project-thumb img{
+    width: 100%; height: 100%; object-fit: cover; display:block;
+    filter: saturate(0.9) brightness(0.8);
+  }
+  .project-thumb::after{
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(6,8,15,0) 40%, rgba(6,8,15,0.75) 100%);
+  }
+  .project-thumb.svg{
+    background: linear-gradient(135deg, rgba(125,226,209,0.1), rgba(156,184,255,0.05));
+  }
+  .project-thumb.svg svg{ width: 100%; height: 100%; display: block;}
+  .project-badge{
+    position:absolute; top: 12px; left: 12px; z-index: 2;
+    font-family: var(--mono); font-size: 10px; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: rgba(6,8,15,0.75);
+    padding: 4px 8px; border-radius: 4px;
+    border: 1px solid rgba(125,226,209,0.4);
+    backdrop-filter: blur(6px);
+  }
+  .project-body{ padding: 18px; flex: 1; display: flex; flex-direction: column;}
+  .project-body h4{
+    font-family: var(--sans); font-weight: 600; font-size: 17px;
+    letter-spacing: -0.01em; margin-bottom: 6px; color: var(--ink);
+  }
+  .project-body p{ color: var(--ink-dim); font-size: 13px; flex: 1;}
+  .project-body ul{
+    margin: 10px 0 0 0; padding: 0; list-style: none;
+    display: grid; gap: 5px;
+  }
+  .project-body li{
+    font-size: 13px; color: var(--ink-dim);
+    padding-left: 16px; position: relative;
+  }
+  .project-body li::before{
+    content:""; position: absolute; left: 0; top: 9px;
+    width: 6px; height: 1px; background: var(--accent);
+  }
+  .project-tags{
+    display:flex; flex-wrap: wrap; gap: 6px; margin-top: 14px;
+  }
+  .tag{
+    font-family: var(--mono); font-size: 10px;
+    padding: 3px 8px; border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    letter-spacing: 0.04em;
+  }
+  .project-link{
+    margin-top: 14px; display:inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase;
+    align-self: flex-start;
+  }
+  .project-link:hover{ color: var(--ink);}
+
+  /* ===================== Archive ===================== */
+  .archive-grid{
+    display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  }
+  .archive-link{
+    display:flex; flex-direction: column; gap: 6px;
+    padding: 0; border-radius: 12px;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+    text-decoration: none; color: var(--ink);
+    transition: border-color .15s, background .15s, transform .15s;
+    overflow: hidden;
+  }
+  .archive-link:hover{
+    border-color: rgba(125,226,209,0.4);
+    background: rgba(125,226,209,0.04);
+    transform: translateY(-2px);
+  }
+  .archive-link .ar-title{
+    font-family: var(--sans); font-weight: 500; font-size: 14px;
+    display:flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .archive-link .ar-content{
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .archive-link .ar-thumb{
+    height: 120px;
+    background: #0a0d18;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    position: relative;
+  }
+  .archive-link .ar-thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.95) brightness(0.82);
+  }
+  .archive-link .ar-thumb::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6,8,15,0) 45%, rgba(6,8,15,0.65) 100%);
+  }
+  .archive-link .ar-title small{
+    font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .archive-link .ar-desc{ color: var(--ink-dim); font-size: 12px;}
+  .archive-link .arrow{
+    font-family: var(--mono); color: var(--accent); transition: transform .15s;
+  }
+  .archive-link:hover .arrow{ transform: translateX(4px);}
+  .archive-link .ar-type{
+    align-self: flex-start;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-dim);
+    background: rgba(255,255,255,0.02);
+  }
+  .archive-link.notebook .ar-type{
+    color: var(--accent);
+    border-color: rgba(125,226,209,0.5);
+    background: rgba(125,226,209,0.09);
+  }
+  .archive-link.case-study .ar-type{
+    color: var(--accent-2);
+    border-color: rgba(156,184,255,0.5);
+    background: rgba(156,184,255,0.1);
+  }
+  .archive-link.dashboard .ar-type{
+    color: #8fd0ff;
+    border-color: rgba(143,208,255,0.5);
+    background: rgba(143,208,255,0.1);
+  }
+  .archive-link.pdf .ar-type{
+    color: #f7c27a;
+    border-color: rgba(247,194,122,0.45);
+    background: rgba(247,194,122,0.1);
+  }
+
+  /* ===================== CV ===================== */
+  .cv-actions{
+    display:flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+  }
+  .cv-frame{
+    width: 100%; height: min(70vh, 820px);
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* ===================== Contact / Terminal ===================== */
+  .term{
+    font-family: var(--mono); font-size: 13px;
+    padding: 22px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.05));
+    border-radius: 12px;
+    border: 1px solid var(--line);
+  }
+  .term-line{ padding: 3px 0;}
+  .term-line .p{ color: var(--accent); margin-right: 8px;}
+  .term-line .c{ color: var(--ink);}
+  .term-line .o{ color: var(--ink-dim);}
+  .term-line a{ color: var(--accent-2); text-decoration: none; border-bottom: 1px dashed rgba(156,184,255,0.4);}
+  .term-line a:hover{ color: var(--accent);}
+  .cursor{
+    display:inline-block; width:7px; height:14px; background: var(--accent);
+    animation: blink 1s infinite; vertical-align:-2px; margin-left: 4px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  footer{
+    text-align:center; padding: 40px 0 30px; color: var(--ink-mute);
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border-top: 1px solid var(--line); margin-top: 40px;
+  }
+
+  /* Reveal on scroll */
+  .reveal{
+    opacity: 0; transform: translateY(16px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.in{ opacity: 1; transform: translateY(0);}
+
+  /* ===================== Responsive ===================== */
+  @media (max-width: 900px){
+    .hero-grid{ grid-template-columns: 1fr;}
+    .portrait-ring{ width: 220px; height: 220px;}
+    .block-head{ grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px;}
+    .kpi-grid{ grid-template-columns: 1fr;}
+    .toolbelt{ grid-template-columns: repeat(3, 1fr);}
+    .project-grid{ grid-template-columns: 1fr;}
+    .archive-grid{ grid-template-columns: 1fr;}
+    .gantt-row, .gantt-axis{ grid-template-columns: 130px 1fr;}
+    .gantt-row .role{ font-size: 12px;}
+    .skill-table td.tools{ display: none;}
+    .topbar-inner{ flex-direction: column; align-items: flex-start;}
+    .topbar nav{ justify-content: flex-start;}
+  }
+  @media (max-width: 560px){
+    .topbar nav a{ padding: 6px 8px; font-size: 11px;}
+    .toolbelt{ grid-template-columns: repeat(2, 1fr);}
+    .skill-table th.col-trend, .skill-table td.col-trend{ display:none;}
+  }
+</style>
 </head>
 <body>
-  <div class="bg-liquid" aria-hidden="true">
-    <div class="blob one"></div>
-    <div class="blob two"></div>
-    <div class="blob three"></div>
-    <div class="blob four"></div>
+  <!-- Crisp vector backdrop -->
+  <div class="backdrop" aria-hidden="true">
+    <svg class="backdrop-svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="bdLine" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#7de2d1" stop-opacity="0"/>
+          <stop offset="0.5" stop-color="#7de2d1" stop-opacity="0.7"/>
+          <stop offset="1" stop-color="#7de2d1" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="bdArea" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#7de2d1" stop-opacity="0.18"/>
+          <stop offset="1" stop-color="#7de2d1" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- decorative chart area -->
+      <path d="M0,720 C160,680 240,700 400,620 S640,520 800,560 S1120,420 1280,440 S1520,360 1600,340 L1600,1000 L0,1000 Z" fill="url(#bdArea)"/>
+      <path d="M0,720 C160,680 240,700 400,620 S640,520 800,560 S1120,420 1280,440 S1520,360 1600,340" stroke="url(#bdLine)" stroke-width="1.5" fill="none"/>
+      <!-- scatter -->
+      <g fill="#9cb8ff" opacity="0.6">
+        <circle cx="180" cy="200" r="2"/><circle cx="260" cy="140" r="1.5"/>
+        <circle cx="420" cy="260" r="2.2"/><circle cx="540" cy="180" r="1.8"/>
+        <circle cx="720" cy="120" r="2"/><circle cx="900" cy="240" r="1.6"/>
+        <circle cx="1080" cy="160" r="2.4"/><circle cx="1260" cy="220" r="1.8"/>
+        <circle cx="1440" cy="140" r="2"/>
+      </g>
+      <g fill="#7de2d1" opacity="0.5">
+        <circle cx="120" cy="860" r="1.8"/><circle cx="300" cy="820" r="2"/>
+        <circle cx="480" cy="880" r="1.6"/><circle cx="660" cy="780" r="2.2"/>
+        <circle cx="840" cy="820" r="1.8"/><circle cx="1020" cy="760" r="2"/>
+        <circle cx="1200" cy="800" r="1.6"/><circle cx="1380" cy="740" r="2.4"/>
+      </g>
+    </svg>
+    <div class="backdrop-grid"></div>
+    <div class="backdrop-dots"></div>
+    <div class="blob t"></div>
+    <div class="blob p"></div>
+    <div class="blob b"></div>
   </div>
 
-  <div class="container navbar-wrap">
-    <nav class="navbar glass">
-      <div class="brand">Mauricio Montero</div>
-      <ul class="nav-links">
-        <li><a href="#hero">Home</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#archive">Archive</a></li>
-        <li><a href="#cv">CV</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
-  </div>
+  <!-- ============ Topbar (named nav) ============ -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="logo"><span class="dot"></span> mauricio.montero / portfolio</div>
+      <nav id="mainNav">
+        <a href="#about">About</a>
+        <a href="#highlights">Highlights</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#experience">Experience</a>
+        <a href="#toolbelt">Toolbelt</a>
+        <a href="#projects">Projects</a>
+        <a href="#archive">Archive</a>
+        <a href="#cv">CV</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="container">
-    <section id="hero" class="glass panel">
-      <div class="hero-grid">
-        <div>
-          <p class="eyebrow">Portfolio</p>
-          <h1 class="neon-text">Mauricio Montero</h1>
-          <p class="hero-title">Data Analytics · Data Science · Digital Transformation AI</p>
-          <p class="hero-location">Costa Rica · Open to Global Remote</p>
-          <div class="hero-actions">
-            <a class="btn" href="#stats">View Analytics Snapshot</a>
-            <a class="btn secondary" href="#cv">View CV</a>
+  <!-- ============ About / Hero ============ -->
+  <section id="about" class="block hero">
+    <div class="container">
+      <div class="glass panel reveal">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-kicker">About · Open to collaboration</div>
+            <h1>Data Analyst &amp; Data Scientist building <em>decision-grade analytics</em> for global enterprise operations.</h1>
+            <p class="hero-lede">
+              I turn messy enterprise data into executive-ready insight — pricing models,
+              forecasting systems, payroll KPI dashboards, and AI-assisted workflows — across
+              global operations at Citi, Sysco, Equifax, Walmart, HP and Amazon.
+            </p>
+            <div class="hero-meta">
+              <span><b>Based in</b>Costa Rica · GMT−6</span>
+              <span><b>Open to</b>Global remote</span>
+              <span><b>Focus</b>Analytics · ML · BI · AI</span>
+            </div>
+            <div class="hero-actions">
+              <a class="btn" href="#cv">Read my CV <span class="arr">→</span></a>
+              <a class="btn secondary" href="#projects">See projects</a>
+              <a class="btn secondary" href="#contact">Get in touch</a>
+            </div>
+          </div>
+          <div class="portrait-wrap">
+            <div class="portrait-ring">
+              <img src="images/mauricio-profile.png" alt="Portrait of Mauricio Montero">
+            </div>
           </div>
         </div>
-        <div class="hero-image-wrap">
-          <div class="hero-image-ring">
-            <img class="hero-image" src="images/mauricio-profile.png" alt="Portrait of Mauricio Montero">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Highlights ============ -->
+  <section id="highlights" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Highlights</div>
+        <div class="block-title">
+          <h2>What my work has looked like, at a glance.</h2>
+          <p>A quick snapshot of experience — years in analytics, global enterprises served, and delivered AI/BI initiatives.</p>
+        </div>
+      </div>
+      <div class="glass panel reveal">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="label">Years in Analytics</div>
+            <div class="big">8+<span>yrs</span></div>
+            <div class="note">Trajectory: support → analyst → senior → AVP</div>
+            <svg class="spark" viewBox="0 0 200 48" preserveAspectRatio="none">
+              <defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7de2d1" stop-opacity="0.4"/><stop offset="1" stop-color="#7de2d1" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,42 L20,40 L40,36 L60,32 L80,28 L100,24 L120,18 L140,14 L160,10 L180,8 L200,4 L200,48 L0,48 Z" fill="url(#g1)"/>
+              <path d="M0,42 L20,40 L40,36 L60,32 L80,28 L100,24 L120,18 L140,14 L160,10 L180,8 L200,4" stroke="#7de2d1" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <div class="kpi">
+            <div class="label">Global Enterprises Served</div>
+            <div class="big">8+<span>orgs</span></div>
+            <div class="note">Citi · Sysco · Equifax · Walmart · Labcorp · HPE · HP · Amazon</div>
+            <svg class="spark" viewBox="0 0 200 48" preserveAspectRatio="none">
+              <g fill="#7de2d1" opacity="0.85">
+                <rect x="6" y="34" width="10" height="14"/><rect x="22" y="30" width="10" height="18"/>
+                <rect x="38" y="26" width="10" height="22"/><rect x="54" y="22" width="10" height="26"/>
+                <rect x="70" y="18" width="10" height="30"/><rect x="86" y="14" width="10" height="34"/>
+                <rect x="102" y="18" width="10" height="30"/><rect x="118" y="14" width="10" height="34"/>
+                <rect x="134" y="10" width="10" height="38"/><rect x="150" y="6" width="10" height="42"/>
+              </g>
+            </svg>
+          </div>
+          <div class="kpi">
+            <div class="label">AI / BI / Digital Transformation Initiatives</div>
+            <div class="big">25<span>+</span></div>
+            <div class="note">Pricing · RevOps · Payroll · RAG · Forecasting · Digital Transformation</div>
+            <svg class="spark" viewBox="0 0 200 48" preserveAspectRatio="none">
+              <path d="M0,40 C20,34 30,36 50,28 S80,20 100,24 S140,12 160,16 S180,8 200,10"
+                    stroke="#9cb8ff" stroke-width="1.5" fill="none"/>
+              <circle cx="200" cy="10" r="2.8" fill="#9cb8ff"/>
+            </svg>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="stats" class="glass panel">
-      <div class="section-heading">
-        <h2>Highlights</h2>
-      </div>
-      <div class="stats">
-        <div class="stat-item">
-          <span class="stat-number">8+</span>
-          <span class="stat-label">Years Experience</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">8+</span>
-          <span class="stat-label">Global Companies</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">25+</span>
-          <span class="stat-label">AI / BI Initiatives</span>
+  <!-- ============ Capability Scorecard ============ -->
+  <section id="capabilities" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Capabilities</div>
+        <div class="block-title">
+          <h2>Capability scorecard.</h2>
+          <p>Data-driven decision making across global operations — analytics strategy, predictive modeling, and business impact optimization.</p>
         </div>
       </div>
-    </section>
+      <div class="glass panel reveal">
+        <table class="skill-table">
+          <thead>
+            <tr>
+              <th style="width:30%;">domain</th>
+              <th style="width:14%;">proficiency</th>
+              <th style="width:24%;" class="col-trend">level</th>
+              <th>primary tools</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name">Analytics &amp; BI</td>
+              <td class="score">0.96</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:96%;"></span></div></td>
+              <td class="tools">Tableau · Power BI</td>
+            </tr>
+            <tr>
+              <td class="name">Data Science &amp; ML</td>
+              <td class="score">0.91</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:91%;"></span></div></td>
+              <td class="tools">Python · scikit-learn · ARIMA · GBM</td>
+            </tr>
+            <tr>
+              <td class="name">Data Engineering</td>
+              <td class="score">0.84</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:84%;"></span></div></td>
+              <td class="tools">SQL · Alteryx · Dataiku · ETL</td>
+            </tr>
+            <tr>
+              <td class="name">AI &amp; Automation</td>
+              <td class="score">0.84</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:84%;"></span></div></td>
+              <td class="tools">RAG · LLMs · RPA · ServiceNow · Stylus</td>
+            </tr>
+            <tr>
+              <td class="name">Strategy Alignment</td>
+              <td class="score">0.90</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:90%;"></span></div></td>
+              <td class="tools">Executive KPI · Decision support</td>
+            </tr>
+            <tr>
+              <td class="name">Digital Transformation &amp; AI</td>
+              <td class="score">0.92</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:92%;"></span></div></td>
+              <td class="tools">M.Sc. Artificial Intelligence · enterprise AI adoption</td>
+            </tr>
+            <tr>
+              <td class="name">Leadership &amp; Teaching</td>
+              <td class="score">0.89</td>
+              <td class="col-trend"><div class="skill-bar"><span style="width:89%;"></span></div></td>
+              <td class="tools">Graduate program · ULATINA</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
-    <section id="skills" class="glass panel">
-      <div class="section-heading">
-        <h2>Capability Dashboard</h2>
-        <p>Data-driven decision making across global operations, specializing in analytics strategy, predictive modeling, and business impact optimization.</p>
+  <!-- ============ Experience Gantt ============ -->
+  <section id="experience" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Experience</div>
+        <div class="block-title">
+          <h2>Career as a timeline.</h2>
+          <p>A Gantt view of every role — overlap, duration, and concurrent positions at a glance. Hover any bar for role details.</p>
+        </div>
       </div>
-      <div class="capability-dashboard">
-        <article class="capability-tile">
-          <div class="capability-head"><strong>Data Analytics &amp; Business Intelligence</strong><span>Expert</span></div>
-          <div class="capability-bar"><span class="capability-fill" style="width:100%;"></span></div>
-          <ul>
-            <li>KPI Design &amp; Global Performance Tracking</li>
-            <li>Executive Dashboards (Tableau, Power BI)</li>
-            <li>Data Storytelling for Leadership Decision-Making</li>
-          </ul>
-        </article>
-        <article class="capability-tile">
-          <div class="capability-head"><strong>Data Science &amp; Advanced Analytics</strong><span>Advanced</span></div>
-          <div class="capability-bar"><span class="capability-fill" style="width:92%;"></span></div>
-          <ul>
-            <li>Predictive Modeling (GBM, Regression, NLP)</li>
-            <li>Forecasting &amp; Simulation (ARIMA, scenario modeling)</li>
-            <li>Feature Engineering &amp; Model Evaluation</li>
-          </ul>
-        </article>
-        <article class="capability-tile">
-          <div class="capability-head"><strong>Data Engineering &amp; Pipelines</strong><span>Strong</span></div>
-          <div class="capability-bar"><span class="capability-fill" style="width:84%;"></span></div>
-          <ul>
-            <li>SQL, Python, ETL Design</li>
-            <li>Alteryx, Dataiku</li>
-          </ul>
-        </article>
-        <article class="capability-tile">
-          <div class="capability-head"><strong>AI &amp; Automation</strong><span>Strong</span></div>
-          <div class="capability-bar"><span class="capability-fill" style="width:84%;"></span></div>
-          <ul>
-            <li>Process Automation (RPA, ServiceNow, Stylus)</li>
-            <li>AI-driven anomaly detection</li>
-            <li>LLM + RAG systems</li>
-          </ul>
-        </article>
-        <article class="capability-tile">
-          <div class="capability-head"><strong>Business &amp; Strategy Alignment</strong><span>Advanced</span></div>
-          <div class="capability-bar"><span class="capability-fill" style="width:90%;"></span></div>
-          <ul>
-            <li>Data-driven decision making at enterprise scale</li>
-            <li>Translating business problems into analytical solutions</li>
-          </ul>
-        </article>
-        <article class="capability-tile">
-          <div class="capability-head"><strong>Leadership &amp; Communication</strong><span>Advanced</span></div>
-          <div class="capability-bar"><span class="capability-fill" style="width:90%;"></span></div>
-          <ul>
-            <li>Executive communication &amp; insight delivery</li>
-            <li>Graduate-level teaching (ULATINA)</li>
-          </ul>
-        </article>
+      <div class="glass panel reveal">
+        <div class="gantt">
+          <div class="gantt-axis">
+            <div>role</div>
+            <div class="gantt-years">
+              <span>2016</span><span>'17</span><span>'18</span><span>'19</span><span>'20</span>
+              <span>'21</span><span>'22</span><span>'23</span><span>'24</span><span>'25</span><span>'26</span>
+            </div>
+          </div>
+          <!-- Axis: 2016-01 = 0%, 2026-12 = 100% -> 11 years span -->
+          <!-- Pos calc: (yearsFromStart/11)*100 -->
+          <div class="gantt-row">
+            <div class="role">Citi <small>AVP · Global Payroll Analytics</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar current" style="left:83.3%; width:13%;">Mar 2025 → present</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Citi · AVP · Mar 2025 → present</strong>
+              <ul>
+                <li>Leading global payroll analytics transformation across 90+ countries with enterprise operating complexity.</li>
+                <li>Built executive KPI systems for payroll risk, compliance, and performance decision support.</li>
+                <li>Supporting global payroll automation initiatives across enterprise operations.</li>
+                <li>Contributing to analytics, controls, and dashboard solutions for payroll transformation.</li>
+                <li>Partnering with business and technology teams to improve KPI visibility and operational transparency.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">ULATINA <small>Professor · Grad Analytics</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar current" style="left:88.6%; width:7.6%;">Oct 2025 →</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>ULATINA · Professor · Oct 2025 → present</strong>
+              <ul>
+                <li>Deliver graduate programs on analytics strategy and data-driven executive decision making.</li>
+                <li>Mentor leaders on practical ML adoption and business impact translation.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">Sysco <small>Senior Data Analyst</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar" style="left:76.5%; width:6.8%;">Jun '24 – Mar '25</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Sysco · Senior Data Analyst · Jun 2024 – Mar 2025</strong>
+              <ul>
+                <li>Built a pricing optimization ML model that improved contract profitability prioritization.</li>
+                <li>Delivered forecasting and analytics automation products for faster commercial decisions.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">Equifax <small>RevOps Analyst II</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar" style="left:71.2%; width:5.3%;">Nov '23 – Jun '24</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Equifax · RevOps Analyst II · Nov 2023 – Jun 2024</strong>
+              <ul>
+                <li>Built classifier systems for e-commerce account segmentation and market targeting.</li>
+                <li>Developed revenue forecasting models that improved planning and pipeline visibility.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">Walmart <small>Pricing Analyst</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar" style="left:53.8%; width:17.4%;">Dec '21 – Nov '23</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Walmart · Pricing Analyst · Dec 2021 – Nov 2023</strong>
+              <ul>
+                <li>Built pricing analytics products and dashboards for category and margin performance monitoring.</li>
+                <li>Delivered ETL and geospatial competitor insights to support high-impact commercial decisions.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">Labcorp <small>Associate Programmer</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar tiny" style="left:52.3%; width:1.5%;"></div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Labcorp Drug Development · Associate Programmer · Oct 2021 – Dec 2021</strong>
+              <ul>
+                <li>Developed C# EDC customizations to improve clinical data quality and reporting readiness.</li>
+                <li>Supported structured data capture workflows for regulated study environments.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">HPE <small>Solution Architect Intern</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar tiny" style="left:49.2%; width:3%;"></div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Hewlett Packard Enterprise · Solution Architect Intern · Jun 2021 – Oct 2021</strong>
+              <ul>
+                <li>Built solution proposals aligning architecture, costs, and business outcomes.</li>
+                <li>Supported enterprise pre-sales analytics and technical evaluation activities.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">HP <small>Fleet Management Engineer</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar" style="left:26.5%; width:22.7%;">Dec '18 – Jun '21</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Hewlett Packard · Fleet Management Engineer · Dec 2018 – Jun 2021</strong>
+              <ul>
+                <li>Automated printer fleet operations using Python, reducing repetitive manual workload.</li>
+                <li>Built service analytics dashboards for performance, incident tracking, and operational control.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="gantt-row">
+            <div class="role">Amazon <small>Kindle Tech Support</small></div>
+            <div class="gantt-track">
+              <div class="gantt-bar" style="left:0%; width:9.8%;">Jan '16 – Feb '17</div>
+            </div>
+            <div class="gantt-tip">
+              <strong>Amazon · Kindle Tech Support · Jan 2016 – Feb 2017</strong>
+              <ul>
+                <li>Used customer feedback analytics to improve support quality and team outcomes.</li>
+                <li>Built a foundation in high-volume technical operations and service excellence.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="experience" class="glass panel">
-      <div class="section-heading">
-        <h2>Experience</h2>
+  <!-- ============ Toolbelt ============ -->
+  <section id="toolbelt" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Toolbelt</div>
+        <div class="block-title">
+          <h2>The stack I work in.</h2>
+          <p>Primary tools used across analytics, data engineering, and AI work — organized for quick scanning.</p>
+        </div>
       </div>
-      <div class="timeline">
-        <article class="timeline-item">
-          <div class="timeline-date">Mar 2025 - Present</div>
-          <div>
-            <h3 class="timeline-role">Assistant Vice President - Citi</h3>
-            <ul>
-              <li>Leading global payroll analytics transformation across 90+ countries with enterprise operating complexity.</li>
-              <li>Built executive KPI systems for payroll risk, compliance, and performance decision support.</li>
-              <li>Supporting global payroll automation initiatives across enterprise operations.</li>
-              <li>Contributing to analytics, controls, and dashboard solutions for payroll transformation.</li>
-              <li>Partnering with business and technology teams to improve KPI visibility and operational transparency.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Oct 2025 - Present</div>
-          <div>
-            <h3 class="timeline-role">Professor · ULATINA</h3>
-            <ul>
-              <li>Deliver graduate programs on analytics strategy and data-driven executive decision making.</li>
-              <li>Mentor leaders on practical ML adoption and business impact translation.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Jun 2024 - Mar 2025</div>
-          <div>
-            <h3 class="timeline-role">Senior Data Analyst · Sysco</h3>
-            <ul>
-              <li>Built a pricing optimization ML model that improved contract profitability prioritization.</li>
-              <li>Delivered forecasting and analytics automation products for faster commercial decisions.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Nov 2023 - Jun 2024</div>
-          <div>
-            <h3 class="timeline-role">RevOps Analyst II · Equifax</h3>
-            <ul>
-              <li>Built classifier systems for e-commerce account segmentation and market targeting.</li>
-              <li>Developed revenue forecasting models that improved planning and pipeline visibility.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Dec 2021 - Nov 2023</div>
-          <div>
-            <h3 class="timeline-role">Pricing Analyst · Walmart</h3>
-            <ul>
-              <li>Built pricing analytics products and dashboards for category and margin performance monitoring.</li>
-              <li>Delivered ETL and geospatial competitor insights to support high-impact commercial decisions.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Oct 2021 - Dec 2021</div>
-          <div>
-            <h3 class="timeline-role">Associate Programmer · Labcorp Drug Development</h3>
-            <ul>
-              <li>Developed C# EDC customizations to improve clinical data quality and reporting readiness.</li>
-              <li>Supported structured data capture workflows for regulated study environments.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Jun 2021 - Oct 2021</div>
-          <div>
-            <h3 class="timeline-role">Solution Architect Intern · Hewlett Packard Enterprise</h3>
-            <ul>
-              <li>Built solution proposals aligning architecture, costs, and business outcomes.</li>
-              <li>Supported enterprise pre-sales analytics and technical evaluation activities.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Dec 2018 - Jun 2021</div>
-          <div>
-            <h3 class="timeline-role">Fleet Management Engineer · Hewlett Packard</h3>
-            <ul>
-              <li>Automated printer fleet operations using Python, reducing repetitive manual workload.</li>
-              <li>Built service analytics dashboards for performance, incident tracking, and operational control.</li>
-            </ul>
-          </div>
-        </article>
-        <article class="timeline-item">
-          <div class="timeline-date">Jan 2016 - Feb 2017</div>
-          <div>
-            <h3 class="timeline-role">Kindle Tech Support · Amazon</h3>
-            <ul>
-              <li>Used customer feedback analytics to improve support quality and team outcomes.</li>
-              <li>Built a foundation in high-volume technical operations and service excellence.</li>
-            </ul>
-          </div>
-        </article>
+      <div class="glass panel reveal">
+        <div class="toolbelt">
+          <div class="tool"><div class="tool-glyph">Py</div><div class="name">Python</div><div class="lvl">Daily</div><div class="tool-tip">General-purpose language for analytics, modeling, and automation.</div></div>
+          <div class="tool"><div class="tool-glyph">SQL</div><div class="name">SQL</div><div class="lvl">Daily</div><div class="tool-tip">Relational query language — backbone of data extraction and reporting.</div></div>
+          <div class="tool"><div class="tool-glyph">R</div><div class="name">R</div><div class="lvl">Project</div><div class="tool-tip">Statistical computing language for modeling and inference.</div></div>
+          <div class="tool"><div class="tool-glyph">dbt</div><div class="name">dbt</div><div class="lvl">Project</div><div class="tool-tip">SQL-based transformation framework for modern data warehouses.</div></div>
+          <div class="tool"><div class="tool-glyph">Pbi</div><div class="name">Power BI</div><div class="lvl">Daily</div><div class="tool-tip">Microsoft BI suite for executive dashboards and reporting.</div></div>
+          <div class="tool"><div class="tool-glyph">Tb</div><div class="name">Tableau</div><div class="lvl">Project</div><div class="tool-tip">Visual analytics platform for interactive dashboards.</div></div>
+          <div class="tool"><div class="tool-glyph">Dk</div><div class="name">Dataiku</div><div class="lvl">Project</div><div class="tool-tip">End-to-end data science and ML Ops platform.</div></div>
+          <div class="tool"><div class="tool-glyph">Alx</div><div class="name">Alteryx</div><div class="lvl">Project</div><div class="tool-tip">No-code ETL and analytics workflow designer.</div></div>
+          <div class="tool"><div class="tool-glyph">sk</div><div class="name">scikit-learn</div><div class="lvl">Project</div><div class="tool-tip">Python ML library for classification, regression, clustering.</div></div>
+          <div class="tool"><div class="tool-glyph">ML</div><div class="name">GBM / ARIMA</div><div class="lvl">Project</div><div class="tool-tip">Gradient boosting &amp; time-series forecasting methods.</div></div>
+          <div class="tool"><div class="tool-glyph">RAG</div><div class="name">LLM / RAG</div><div class="lvl">Research</div><div class="tool-tip">Large language models with retrieval-augmented generation.</div></div>
+          <div class="tool"><div class="tool-glyph">SN</div><div class="name">ServiceNow</div><div class="lvl">Project</div><div class="tool-tip">Enterprise workflow and ITSM platform for automation.</div></div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="projects" class="glass panel">
-      <div class="section-heading">
-        <h2>Featured Projects</h2>
-        <p>High-impact analytics and automation implementations with enterprise business outcomes.</p>
+  <!-- ============ Featured Projects ============ -->
+  <section id="projects" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Featured Projects</div>
+        <div class="block-title">
+          <h2>High-impact analytics and automation work.</h2>
+          <p>Enterprise projects delivered in pricing, BI, automation, training, customer analytics, and AI research.</p>
+        </div>
       </div>
-      <div class="featured-grid">
-        <article class="project-item">
-          <h3><span class="featured-icon">💰</span>Pricing Optimization Model - Walmart</h3>
-          <ul>
-            <li>Optimized price suggestion models aligned with business strategy.</li>
-            <li>Migrated ETL pipelines from Alteryx to Dataiku.</li>
-            <li>Built analytics workflows and Power BI dashboards for decision-making.</li>
-            <li>Acted as superuser and technical liaison for analytics solutions.</li>
-          </ul>
-          <div class="tag-row"><span class="tag">Pricing</span><span class="tag">ML</span><span class="tag">ETL</span><span class="tag">Power BI</span></div>
-        </article>
-        <article class="project-item">
-          <h3><span class="featured-icon">📊</span>Enterprise Data Visualization - HP</h3>
-          <ul>
-            <li>Built centralized SSMS database integrating ServiceNow and CDAX data.</li>
-            <li>Led data cleaning and transformation workflows.</li>
-            <li>Developed BI dashboards for operational performance tracking and pattern recognition.</li>
-          </ul>
-          <div class="tag-row"><span class="tag">SQL</span><span class="tag">BI</span><span class="tag">Data Engineering</span><span class="tag">Analytics</span></div>
-        </article>
-        <article class="project-item">
-          <h3><span class="featured-icon">⚙️</span>Automation Engineering - HP</h3>
-          <ul>
-            <li>Developed Python scripts for firmware deployment automation.</li>
-            <li>Automated Web JetAdmin group script generation.</li>
-            <li>Achieved approximately 96% reduction in execution time.</li>
-          </ul>
-          <div class="tag-row"><span class="tag">Python</span><span class="tag">Automation</span><span class="tag">Efficiency</span></div>
-        </article>
-        <article class="project-item">
-          <h3><span class="featured-icon">🎓</span>Analytics Training &amp; Enablement - HP</h3>
-          <ul>
-            <li>Designed training content for fleet management engineers.</li>
-            <li>Standardized onboarding knowledge across teams.</li>
-            <li>Improved internal analytics and technical capabilities.</li>
-          </ul>
-          <div class="tag-row"><span class="tag">Leadership</span><span class="tag">Training</span><span class="tag">Analytics</span></div>
-        </article>
-        <article class="project-item">
-          <h3><span class="featured-icon">📦</span>Customer Data Mining - Amazon</h3>
-          <ul>
-            <li>Analyzed customer feedback and support call data at scale.</li>
-            <li>Identified recurring patterns in negative experiences.</li>
-            <li>Delivered actionable insights to improve team performance.</li>
-          </ul>
-          <div class="tag-row"><span class="tag">Data Mining</span><span class="tag">Analytics</span><span class="tag">Operations</span></div>
-        </article>
-        <article class="project-item">
-          <h3><span class="featured-icon">🧠</span>UNIR Innovation Research - Conversational RAG in 3D</h3>
-          <p>Co-authored innovation project integrating conversational AI and interactive 3D NPC workflows for immersive learning scenarios.</p>
-          <p><a class="btn secondary" id="research-pdf-link" href="./Seminario_Innovacion_RAG_3D.pdf" target="_blank" rel="noopener noreferrer">Open Research PDF</a></p>
-          <div class="tag-row"><span class="tag">RAG</span><span class="tag">3D</span><span class="tag">Research</span></div>
-        </article>
-      </div>
-    </section>
+      <div class="glass panel reveal">
+        <div class="project-grid">
 
-    <section id="archive" class="glass panel">
-      <div class="section-heading">
-        <h2>Project Archive</h2>
-        <p>Explore selected project pages hosted in this portfolio repository.</p>
-      </div>
-      <div class="archive-grid">
-        <a class="archive-link" href="1-Fundamentos Modelos de Regresión.html">
-          📈 Regression Modeling Fundamentals
-          <small>End-to-end regression modeling including feature selection, validation, and performance evaluation.</small>
-        </a>
-        <a class="archive-link" href="2-Preprocesamiento de Datos.html">
-          🧹 Data Preprocessing Pipeline
-          <small>Robust preprocessing workflow for cleaning, transforming, and preparing data for modeling accuracy.</small>
-        </a>
-        <a class="archive-link" href="Practica_1.html">
-          📊 Exploratory Data Analysis
-          <small>Insight-focused exploratory analysis with trend diagnostics and decision-support visuals.</small>
-        </a>
-        <a class="archive-link" href="Practica_2.html">
-          ⚙️ Advanced Modeling &amp; Feature Engineering
-          <small>Feature engineering and advanced modeling techniques for stronger predictive performance.</small>
-        </a>
-        <a class="archive-link" href="walmartSales.html">
-          📉 Walmart Sales Dashboard
-          <small>Business dashboarding solution for pricing visibility, category performance, and actionability.</small>
-        </a>
-        <a class="archive-link" href="SQL_for_data_analysis.html">
-          🗄️ SQL Analytics Case Study
-          <small>SQL-based analytics case demonstrating structured querying for executive reporting and insights.</small>
-        </a>
-        <a class="archive-link" href="movies_analysis.html">
-          🎬 Movie Ratings Analysis
-          <small>Comparative rating analysis using Python to uncover performance drivers and audience patterns.</small>
-        </a>
-      </div>
-      <div class="section-heading" style="margin-top:18px;">
-        <p>Project previews with polished summaries and direct access.</p>
-      </div>
-      <div class="preview-grid">
-        <article class="preview-card">
-          <span class="card-badge">Notebook Project</span>
-          <div class="project-thumb"><span class="project-thumb-label">Regression Modeling</span></div>
-          <h3>Regression Modeling Fundamentals 📈</h3>
-          <p>Complete modeling flow from exploratory analysis to regression validation and business interpretation.</p>
-          <div class="tag-row"><span class="tag">Regression</span><span class="tag">Feature Selection</span><span class="tag">Validation</span></div>
-            <a class="btn secondary" href="1-Fundamentos Modelos de Regresión.html">Open Project</a>
-        </article>
-        <article class="preview-card">
-          <span class="card-badge">Notebook Project</span>
-          <div class="project-thumb"><span class="project-thumb-label">Data Preparation</span></div>
-          <h3>Data Preprocessing Pipeline 🧹</h3>
-          <p>Data quality, transformation, and feature preparation processes built for downstream analytics reliability.</p>
-          <div class="tag-row"><span class="tag">ETL</span><span class="tag">Cleaning</span><span class="tag">Transformation</span></div>
-            <a class="btn secondary" href="2-Preprocesamiento de Datos.html">Open Project</a>
-        </article>
-        <article class="preview-card">
-          <span class="card-badge">Notebook Project</span>
-          <div class="project-thumb"><span class="project-thumb-label">EDA Insights</span></div>
-          <h3>Exploratory Data Analysis 📊</h3>
-          <p>Analytical exploration focused on trend detection, segmentation logic, and insight communication.</p>
-          <div class="tag-row"><span class="tag">EDA</span><span class="tag">Trends</span><span class="tag">Insights</span></div>
-            <a class="btn secondary" href="Practica_1.html">Open Project</a>
-        </article>
-        <article class="preview-card">
-          <span class="card-badge">Notebook Project</span>
-          <div class="project-thumb"><span class="project-thumb-label">Feature Engineering</span></div>
-          <h3>Advanced Modeling &amp; Feature Engineering ⚙️</h3>
-          <p>Advanced model experimentation with engineered features to improve predictive signal quality.</p>
-          <div class="tag-row"><span class="tag">Modeling</span><span class="tag">Features</span><span class="tag">Performance</span></div>
-            <a class="btn secondary" href="Practica_2.html">Open Project</a>
-        </article>
-        <article class="preview-card">
-          <span class="card-badge">Case Study</span>
-          <div class="project-thumb"><span class="project-thumb-label">SQL Analysis</span></div>
-          <h3>SQL Analytics Case Study 🗄️</h3>
-          <p>Structured SQL analysis applied to business questions with clear KPI reporting outputs.</p>
-          <div class="tag-row"><span class="tag">SQL</span><span class="tag">KPI Reporting</span><span class="tag">Query Design</span></div>
-            <a class="btn secondary" href="SQL_for_data_analysis.html">Open Project</a>
-        </article>
-        <article class="preview-card">
-          <span class="card-badge">Case Study</span>
-          <div class="project-thumb"><span class="project-thumb-label">Ratings Intelligence</span></div>
-          <h3>Movie Ratings Analysis 🎬</h3>
-          <p>Comparative analytics project identifying rating trends and behavioral patterns in entertainment data.</p>
-          <div class="tag-row"><span class="tag">Python</span><span class="tag">Comparative Analysis</span><span class="tag">Segmentation</span></div>
-            <a class="btn secondary" href="movies_analysis.html">Open Project</a>
-        </article>
-      </div>
-    </section>
+          <article class="project">
+            <div class="project-thumb">
+              <span class="project-badge">Case Study</span>
+              <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80" alt="Pricing analytics charts and dashboard">
+            </div>
+            <div class="project-body">
+              <h4>Pricing Optimization Model — Walmart</h4>
+              <p>Pricing analytics program across category and margin performance monitoring.</p>
+              <ul>
+                <li>Optimized price-suggestion models aligned with business strategy.</li>
+                <li>Migrated ETL pipelines from Alteryx to Dataiku.</li>
+                <li>Built analytics workflows and Power BI dashboards for decision-making.</li>
+                <li>Acted as superuser and technical liaison for analytics solutions.</li>
+              </ul>
+              <div class="project-tags">
+                <span class="tag">pricing</span><span class="tag">ml</span>
+                <span class="tag">etl</span><span class="tag">power_bi</span>
+              </div>
+            </div>
+          </article>
 
-    <section id="cv" class="glass panel">
-      <div class="section-heading">
-        <h2>Curriculum Vitae</h2>
-        <p>Updated professional profile, experience, and credentials.</p>
-      </div>
-      <div class="hero-actions" style="margin-top: 0; margin-bottom: 12px;">
-        <a class="btn" href="Mauricio_Montero_CV.pdf" target="_blank" rel="noopener noreferrer">Open CV</a>
-        <a class="btn secondary" href="Mauricio_Montero_CV.pdf" download>Download CV</a>
-      </div>
-      <iframe class="cv-frame" src="Mauricio_Montero_CV.pdf" title="Mauricio Montero CV"></iframe>
-    </section>
+          <article class="project">
+            <div class="project-thumb">
+              <span class="project-badge">Case Study</span>
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" alt="Business intelligence dashboard and data visualization">
+            </div>
+            <div class="project-body">
+              <h4>Enterprise Data Visualization — HP</h4>
+              <p>Centralized database and BI stack for operational performance tracking.</p>
+              <ul>
+                <li>Built centralized SSMS database integrating ServiceNow and CDAX data.</li>
+                <li>Led data cleaning and transformation workflows.</li>
+                <li>Developed BI dashboards for performance tracking and pattern recognition.</li>
+              </ul>
+              <div class="project-tags">
+                <span class="tag">sql</span><span class="tag">bi</span>
+                <span class="tag">data_eng</span><span class="tag">analytics</span>
+              </div>
+            </div>
+          </article>
 
-    <section id="contact" class="glass panel">
-      <div class="section-heading">
-        <h2>Contact</h2>
-        <p>Open to collaborations in AI, data science, and digital transformation initiatives.</p>
+          <article class="project">
+            <div class="project-thumb">
+              <span class="project-badge">Case Study</span>
+              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" alt="Automation engineering and Python workflow concept">
+            </div>
+            <div class="project-body">
+              <h4>Automation Engineering — HP</h4>
+              <p>Python automation for firmware deployment and fleet operations.</p>
+              <ul>
+                <li>Developed Python scripts for firmware deployment automation.</li>
+                <li>Automated Web JetAdmin group script generation.</li>
+                <li>Achieved approximately 96% reduction in execution time.</li>
+              </ul>
+              <div class="project-tags">
+                <span class="tag">python</span><span class="tag">automation</span>
+                <span class="tag">efficiency</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project-thumb">
+              <span class="project-badge">Case Study</span>
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80" alt="Team training and analytics enablement workshop">
+            </div>
+            <div class="project-body">
+              <h4>Analytics Training &amp; Enablement — HP</h4>
+              <p>Standardized analytics onboarding content for fleet management engineers.</p>
+              <ul>
+                <li>Designed training content for fleet management engineers.</li>
+                <li>Standardized onboarding knowledge across teams.</li>
+                <li>Improved internal analytics and technical capabilities.</li>
+              </ul>
+              <div class="project-tags">
+                <span class="tag">leadership</span><span class="tag">training</span>
+                <span class="tag">analytics</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project-thumb">
+              <span class="project-badge">Case Study</span>
+              <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80" alt="Customer support data analysis on laptop">
+            </div>
+            <div class="project-body">
+              <h4>Customer Data Mining — Amazon</h4>
+              <p>Mining support call and feedback data at scale to improve team performance.</p>
+              <ul>
+                <li>Analyzed customer feedback and support call data at scale.</li>
+                <li>Identified recurring patterns in negative experiences.</li>
+                <li>Delivered actionable insights to improve team performance.</li>
+              </ul>
+              <div class="project-tags">
+                <span class="tag">data_mining</span><span class="tag">analytics</span>
+                <span class="tag">operations</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project-thumb">
+              <span class="project-badge">Research</span>
+              <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80" alt="AI research concept with virtual assistant">
+            </div>
+            <div class="project-body">
+              <h4>UNIR Innovation Research — Conversational RAG in 3D</h4>
+              <p>Co-authored innovation project integrating conversational AI with interactive 3D NPC workflows for immersive learning.</p>
+              <div class="project-tags">
+                <span class="tag">rag</span><span class="tag">3d</span>
+                <span class="tag">research</span>
+              </div>
+              <a class="project-link" href="Seminario_Innovacion_RAG_3D.pdf" target="_blank" rel="noopener">open research pdf →</a>
+            </div>
+          </article>
+
+        </div>
       </div>
-      <div class="contact-grid">
-        <a href="mailto:monteromauricio5070@hotmail.com">monteromauricio5070@hotmail.com</a>
-        <a href="https://www.linkedin.com/in/mauricio-montero-marín" target="_blank" rel="noopener noreferrer">LinkedIn: mauricio-montero-marín</a>
-        <a href="https://github.com/mauricio5070" target="_blank" rel="noopener noreferrer">GitHub: mauricio5070</a>
-        <span>Phone: +506 8368 6867</span>
+    </div>
+  </section>
+
+  <!-- ============ Project Archive ============ -->
+  <section id="archive" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Project Archive</div>
+        <div class="block-title">
+          <h2>Notebooks, case studies, and dashboards.</h2>
+          <p>Selected project pages hosted in this portfolio repository — open any to see the full write-up.</p>
+        </div>
       </div>
-    </section>
-  </main>
+      <div class="glass panel reveal">
+        <div class="archive-grid">
+          <a class="archive-link notebook" href="1-Fundamentos-Regresion.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80" alt="Regression notebook dashboard"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Fundamentos de Regresión Lineal <small>1-Fundamentos-Regresion.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Base estadística y de modelado para regresión lineal con enfoque en validación y desempeño.</div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="2-Preprocesamiento-Datos.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=900&q=80" alt="Data preprocessing and ETL flow"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Preprocesamiento de Datos <small>2-Preprocesamiento-Datos.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Limpieza, transformación y preparación de datos para mejorar la calidad de los modelos.</div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="Practica_1.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=900&q=80" alt="Exploratory data analysis notebook"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Práctica 1 — Regresión Lineal Simple <small>Practica_1.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Ejercicio guiado de regresión lineal simple con interpretación de variables y métricas.</div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="Practica_2.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=900&q=80" alt="Multiple linear regression and admissions analytics"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Práctica 2 — Regresión Lineal Múltiple <small>Practica_2.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Modelo de admisiones universitarias con regresión múltiple, ingeniería de variables y evaluación.</div>
+            </div>
+          </a>
+          <a class="archive-link dashboard" href="walmartSales.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1556155092-8707de31f9c4?auto=format&fit=crop&w=900&q=80" alt="Retail sales dashboard interface"></div>
+            <div class="ar-content">
+              <div class="ar-type">Dashboard</div>
+              <div class="ar-title">Walmart Sales Dashboard <small>walmartSales.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Visualización de ventas y desempeño por categorías para decisiones comerciales en retail.</div>
+            </div>
+          </a>
+          <a class="archive-link case-study" href="SQL_for_data_analysis.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=900&q=80" alt="SQL query and database analytics screen"></div>
+            <div class="ar-content">
+              <div class="ar-type">Case Study</div>
+              <div class="ar-title">SQL for Data Analysis <small>SQL_for_data_analysis.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Caso práctico con consultas SQL para análisis estructurado y reportes de negocio.</div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="movies_analysis.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80" alt="Movie analysis and ratings data"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Movie Ratings Analysis <small>movies_analysis.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Análisis de calificaciones de películas con Python para identificar patrones de audiencia.</div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="1-Fundamentos Modelos de Regresión.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80" alt="Regression models fundamentals in notebook format"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Fundamentos Modelos de Regresión <small>1-Fundamentos Modelos de Regresión.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Versión adicional del contenido de fundamentos de regresión con estructura de notebook.</div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="2-Preprocesamiento de Datos.html" target="_blank" rel="noopener">
+            <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?auto=format&fit=crop&w=900&q=80" alt="Data preprocessing and cleaning operations"></div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">Preprocesamiento de Datos (versión alterna) <small>2-Preprocesamiento de Datos.html · <span class="arrow">→</span></small></div>
+              <div class="ar-desc">Archivo alterno del flujo de preprocesamiento con limpieza y transformación de variables.</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CV ============ -->
+  <section id="cv" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">CV</div>
+        <div class="block-title">
+          <h2>Curriculum Vitae.</h2>
+          <p>Updated professional profile, experience, and credentials. Embedded below — open or download.</p>
+        </div>
+      </div>
+      <div class="glass panel reveal">
+        <div class="cv-actions">
+          <a class="btn" href="Mauricio_Montero_CV.pdf" target="_blank" rel="noopener">Open CV <span class="arr">↗</span></a>
+          <a class="btn secondary" href="Mauricio_Montero_CV.pdf" download>Download CV</a>
+        </div>
+        <iframe class="cv-frame" src="Mauricio_Montero_CV.pdf" title="Mauricio Montero CV"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Contact ============ -->
+  <section id="contact" class="block">
+    <div class="container">
+      <div class="block-head">
+        <div class="block-tag">Contact</div>
+        <div class="block-title">
+          <h2>Let's talk.</h2>
+          <p>Open to collaborations in AI, data science, and digital transformation initiatives.</p>
+        </div>
+      </div>
+      <div class="glass panel reveal">
+        <div class="term">
+          <div class="term-line"><span class="p">➜</span><span class="c">whoami</span></div>
+          <div class="term-line"><span class="o">mauricio_montero · data_analyst / data_scientist</span></div>
+          <div class="term-line" style="padding-top:10px;"><span class="p">➜</span><span class="c">contact.json</span></div>
+          <div class="term-line"><span class="o">{</span></div>
+          <div class="term-line"><span class="o">&nbsp;&nbsp;"email":&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="/cdn-cgi/l/email-protection#214c4e4f5544534e4c4054534842484e1411161161494e554c40484d0f424e4c">"<span class="__cf_email__" data-cfemail="8ce1e3e2f8e9fee3e1edf9fee5efe5e3b9bcbbbccce4e3f8e1ede5e0a2efe3e1">[email&#160;protected]</span>"</a><span class="o">,</span></div>
+          <div class="term-line"><span class="o">&nbsp;&nbsp;"linkedin": </span><a href="https://www.linkedin.com/in/mauricio-montero-marín" target="_blank" rel="noopener">"/in/mauricio-montero-marín"</a><span class="o">,</span></div>
+          <div class="term-line"><span class="o">&nbsp;&nbsp;"github":&nbsp;&nbsp;&nbsp;</span><a href="https://github.com/mauricio5070" target="_blank" rel="noopener">"mauricio5070"</a><span class="o">,</span></div>
+          <div class="term-line"><span class="o">&nbsp;&nbsp;"phone":&nbsp;&nbsp;&nbsp;&nbsp;"+506 8368 6867",</span></div>
+          <div class="term-line"><span class="o">&nbsp;&nbsp;"timezone": "GMT−6",</span></div>
+          <div class="term-line"><span class="o">&nbsp;&nbsp;"status":&nbsp;&nbsp;&nbsp;"open_to_collaboration"</span></div>
+          <div class="term-line"><span class="o">}</span></div>
+          <div class="term-line" style="padding-top:10px;"><span class="p">➜</span><span class="c">_</span><span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer>
-    <p>&copy; <span id="year"></span> Mauricio Montero.</p>
+    © <span id="year"></span> Mauricio Montero
   </footer>
 
-  <script>
-    const revealTargets = document.querySelectorAll(".panel");
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("revealed");
-          obs.unobserve(entry.target);
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Reveal
+    const io = new IntersectionObserver((entries, o) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add("in"); o.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+    // Nav scroll-spy
+    const sections = Array.from(document.querySelectorAll("section.block"));
+    const navLinks = Array.from(document.querySelectorAll("#mainNav a"));
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = e.target.id;
+          navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + id));
         }
       });
-    }, { threshold: 0.15, rootMargin: "0px 0px -30px 0px" });
-
-    revealTargets.forEach((target, index) => {
-      target.style.transitionDelay = `${index * 80}ms`;
-      observer.observe(target);
-    });
-
-    const researchButton = document.getElementById("research-pdf-link");
-    if (researchButton) {
-      fetch(researchButton.getAttribute("href"), { method: "HEAD" })
-        .then((response) => {
-          if (!response.ok) {
-            researchButton.textContent = "Research PDF coming soon";
-            researchButton.setAttribute("aria-disabled", "true");
-            researchButton.removeAttribute("href");
-            researchButton.style.opacity = "0.65";
-            researchButton.style.pointerEvents = "none";
-          }
-        })
-        .catch(() => {
-          researchButton.textContent = "Research PDF coming soon";
-          researchButton.setAttribute("aria-disabled", "true");
-          researchButton.removeAttribute("href");
-          researchButton.style.opacity = "0.65";
-          researchButton.style.pointerEvents = "none";
-        });
-    }
-
-    document.getElementById("year").textContent = new Date().getFullYear();
+    }, { threshold: 0.4 });
+    sections.forEach(s => spy.observe(s));
   </script>
 </body>
 </html>
