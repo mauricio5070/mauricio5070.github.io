@@ -1087,6 +1087,41 @@
 
           <article class="project">
             <div class="project-thumb">
+              <span class="project-badge">Data Science · MMM</span>
+              <img
+                src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80"
+                alt="Marketing Mix Modeling — ad spend attribution and budget optimization dashboard"
+              >
+            </div>
+            <div class="project-body">
+              <h4>Marketing Mix Modeling — eCommerce Budget Attribution</h4>
+              <p>
+                A full MMM study across 93 eCommerce brands and 5 years of weekly spend data ($4.8M/week,
+                9 channels). Identifies which ad channels drive new customers and where budget is wasted —
+                Meta Facebook consumes 58% of spend but generates 3.7% of results.
+              </p>
+              <ul>
+                <li>Ridge Regression with adstock + Hill saturation feature engineering</li>
+                <li>6-model horse race (Ridge vs. XGBoost vs. Random Forest) on 52-week holdout</li>
+                <li>SHAP explainability + permutation importance + 500-sample bootstrap CIs</li>
+                <li>Interactive Budget Optimization Simulator with real-time ROI projection</li>
+              </ul>
+              <div class="project-tags">
+                <span class="tag">python</span>
+                <span class="tag">ridge_regression</span>
+                <span class="tag">shap</span>
+                <span class="tag">marketing_mix</span>
+                <span class="tag">bootstrap</span>
+                <span class="tag">scikit-learn</span>
+              </div>
+              <a class="project-link" href="mmm_dashboard.html" target="_blank" rel="noopener">
+                open interactive dashboard →
+              </a>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project-thumb">
               <span class="project-badge">Case Study</span>
               <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80" alt="Pricing analytics charts and dashboard">
             </div>
@@ -1219,6 +1254,44 @@
       </div>
       <div class="glass panel reveal">
         <div class="archive-grid">
+          <a class="archive-link dashboard" href="mmm_dashboard.html" target="_blank" rel="noopener">
+            <div class="ar-thumb">
+              <img
+                src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=900&q=80"
+                alt="Marketing Mix Modeling interactive dashboard with budget optimizer"
+              >
+            </div>
+            <div class="ar-content">
+              <div class="ar-type">Dashboard</div>
+              <div class="ar-title">
+                MMM — Budget Attribution Dashboard
+                <small>mmm_dashboard.html · <span class="arrow">→</span></small>
+              </div>
+              <div class="ar-desc">
+                Interactive dashboard with channel ROI analysis, model horse-race results, saturation curves,
+                and a real-time Budget Optimization Simulator. Built for both technical and executive audiences.
+              </div>
+            </div>
+          </a>
+          <a class="archive-link notebook" href="MMM_Final_v2.ipynb" target="_blank" rel="noopener">
+            <div class="ar-thumb">
+              <img
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80"
+                alt="Marketing Mix Modeling Jupyter notebook with SHAP analysis and model comparison"
+              >
+            </div>
+            <div class="ar-content">
+              <div class="ar-type">Notebook</div>
+              <div class="ar-title">
+                MMM v2 — Full Data Science Notebook
+                <small>MMM_Final_v2.ipynb · <span class="arrow">→</span></small>
+              </div>
+              <div class="ar-desc">
+                Complete implementation: per-channel adstock tuning, 6-model comparison, 52-week holdout,
+                SHAP + permutation importance + partial dependence, bootstrap confidence intervals on all ROI estimates.
+              </div>
+            </div>
+          </a>
           <a class="archive-link notebook" href="1-Fundamentos-Regresion.html" target="_blank" rel="noopener">
             <div class="ar-thumb"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80" alt="Regression notebook dashboard"></div>
             <div class="ar-content">

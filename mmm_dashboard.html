@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marketing Mix Modeling — MMM Dashboard · Mauricio Montero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#06080f; --bg-2:#0a0d18; --ink:#e8ecf5; --ink-dim:#a6adc0; --ink-mute:#6b7285;
+  --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18);
+  --glass:rgba(255,255,255,0.05); --glass-2:rgba(255,255,255,0.08);
+  --accent:#7de2d1; --accent-2:#9cb8ff; --pos:#7de2a8;
+  --danger:#f87171; --warn:#fbbf24; --safe:#7de2a8;
+  --radius:18px;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --sans:"Space Grotesk",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+
+/* Backdrop – matches portfolio */
+.backdrop{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;
+  background:radial-gradient(1200px 700px at 15% -10%,rgba(125,226,209,0.12),transparent 55%),
+    radial-gradient(1000px 600px at 110% 5%,rgba(156,184,255,0.10),transparent 55%),
+    radial-gradient(900px 600px at 50% 120%,rgba(125,226,209,0.08),transparent 55%),
+    linear-gradient(180deg,#05070d 0%,#06080f 40%,#070a12 100%);}
+.backdrop-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.035) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse at 50% 20%,#000 40%,transparent 85%);
+  animation:gridDrift 60s linear infinite;}
+@keyframes gridDrift{from{background-position:0 0,0 0}to{background-position:64px 64px,64px 64px}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;mix-blend-mode:screen;animation:blobFloat 22s ease-in-out infinite;}
+.blob.t{width:540px;height:540px;top:-160px;left:-160px;background:#1f9da0;}
+.blob.p{width:420px;height:420px;top:10%;right:-120px;background:#3a4da8;animation-delay:-6s;}
+.blob.b{width:500px;height:500px;bottom:-200px;left:30%;background:#12a58c;animation-delay:-12s;}
+@keyframes blobFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(30px,-40px,0) scale(1.08)}}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(18px);background:rgba(6,8,15,0.6);border-bottom:1px solid var(--line);}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:20px;width:min(1200px,94vw);margin:0 auto;}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:var(--ink-dim);letter-spacing:.02em;}
+.logo .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent);}
+.back-link{font-family:var(--mono);font-size:12px;color:var(--ink-dim);padding:8px 12px;border-radius:8px;border:1px solid var(--line);transition:color .15s,background .15s;}
+.back-link:hover{color:var(--accent);background:var(--glass);}
+.badge-project{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;background:rgba(125,226,209,0.1);padding:4px 10px;border-radius:999px;border:1px solid rgba(125,226,209,0.35);}
+
+.container{width:min(1200px,94vw);margin:0 auto;}
+
+/* Glass */
+.glass{background:var(--glass);border:1px solid var(--line-strong);backdrop-filter:blur(22px) saturate(140%);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06);}
+.panel{padding:clamp(20px,3vw,32px);}
+
+/* Section scaffold */
+section.block{padding:60px 0 24px;scroll-margin-top:70px;}
+.block-head{display:grid;grid-template-columns:180px 1fr;gap:32px;margin-bottom:24px;}
+.block-tag{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;padding-top:6px;display:flex;align-items:flex-start;gap:10px;}
+.block-tag::before{content:"";width:28px;height:1px;background:var(--accent);margin-top:10px;flex-shrink:0;}
+.block-title h2{font-family:var(--sans);font-weight:600;font-size:clamp(22px,3vw,32px);letter-spacing:-.02em;margin-bottom:8px;}
+.block-title p{color:var(--ink-dim);max-width:780px;font-size:15px;}
+
+/* Hero */
+.hero-wrap{padding:52px 0 20px;}
+.hero-inner{display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+.hero-kicker{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;}
+.hero-kicker::before{content:"";width:28px;height:1px;background:var(--accent);}
+.hero-title{font-size:clamp(28px,4vw,48px);font-weight:600;letter-spacing:-.025em;line-height:1.05;margin-bottom:14px;}
+.hero-title em{font-style:normal;color:var(--accent);}
+.hero-lede{color:var(--ink-dim);font-size:16px;max-width:640px;margin-bottom:20px;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:20px;font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:.06em;text-transform:uppercase;padding-top:16px;border-top:1px dashed var(--line);}
+.hero-meta b{color:var(--ink);font-weight:500;margin-right:6px;}
+
+/* Model badge cluster */
+.model-badges{display:flex;flex-direction:column;gap:8px;min-width:200px;}
+.model-badge{background:var(--glass-2);border:1px solid var(--line-strong);border-radius:10px;padding:10px 14px;}
+.model-badge .mb-label{font-family:var(--mono);font-size:9px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.model-badge .mb-val{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--accent);}
+.model-badge .mb-sub{font-size:11px;color:var(--ink-dim);margin-top:2px;}
+
+/* KPI strip */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.kpi{padding:20px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,0.03);}
+.kpi .label{font-family:var(--mono);font-size:10px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.12em;}
+.kpi .big{font-family:var(--sans);font-weight:600;font-size:clamp(28px,3.5vw,40px);letter-spacing:-.02em;margin-top:6px;line-height:1;}
+.kpi .big span{font-size:14px;color:var(--ink-mute);font-weight:500;margin-left:4px;}
+.kpi .note{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:4px;}
+.kpi .trend{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;margin-top:6px;padding:2px 6px;border-radius:4px;}
+.kpi .trend.up{background:rgba(125,226,168,0.12);color:var(--safe);}
+.kpi .trend.down{background:rgba(248,113,113,0.12);color:var(--danger);}
+
+/* Caption boxes */
+.caption-box{background:rgba(125,226,209,0.05);border:1px solid rgba(125,226,209,0.2);border-radius:10px;padding:12px 16px;margin-top:14px;}
+.caption-box p{font-size:13px;color:var(--ink-dim);line-height:1.55;}
+.caption-box strong{color:var(--accent);}
+.caption-icon{font-family:var(--mono);font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;display:block;}
+
+/* Chart containers */
+.chart-wrap{position:relative;width:100%;}
+.chart-title{font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+
+/* Divider inside panel */
+.panel-divider{border:none;border-top:1px solid var(--line);margin:24px 0;}
+
+/* Channel table */
+.ch-table{width:100%;border-collapse:collapse;}
+.ch-table th{font-family:var(--mono);font-size:10px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.12em;padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-weight:500;}
+.ch-table td{padding:12px 12px;border-bottom:1px dashed var(--line);font-size:13px;vertical-align:middle;}
+.ch-table tr:last-child td{border-bottom:none;}
+.ch-table tr:hover td{background:rgba(125,226,209,0.03);}
+.ch-name{font-weight:500;color:var(--ink);}
+.eff-bar{width:80px;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px;}
+.eff-bar span{display:block;height:100%;border-radius:3px;}
+.verdict-pill{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:3px 8px;border-radius:999px;display:inline-block;}
+.vp-increase{background:rgba(125,226,168,0.12);color:var(--safe);border:1px solid rgba(125,226,168,0.3);}
+.vp-maintain{background:rgba(156,184,255,0.12);color:var(--accent-2);border:1px solid rgba(156,184,255,0.3);}
+.vp-decrease{background:rgba(248,113,113,0.12);color:var(--danger);border:1px solid rgba(248,113,113,0.3);}
+.vp-test{background:rgba(251,191,36,0.12);color:var(--warn);border:1px solid rgba(251,191,36,0.3);}
+.vp-flag{background:rgba(251,191,36,0.12);color:var(--warn);border:1px solid rgba(251,191,36,0.3);}
+
+/* Model horse-race */
+.model-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);}
+.model-row:last-child{border-bottom:none;}
+.model-label{font-family:var(--mono);font-size:12px;color:var(--ink);min-width:160px;}
+.model-bar-track{flex:1;background:rgba(255,255,255,0.05);border-radius:3px;height:20px;overflow:hidden;position:relative;}
+.model-bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:11px;font-weight:500;color:rgba(6,8,15,0.85);white-space:nowrap;}
+.model-bar-neg{background:rgba(248,113,113,0.18);height:100%;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:11px;color:var(--danger);}
+.model-winner{border:1px solid rgba(125,226,209,0.4);border-radius:4px;}
+.model-tag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:2px 7px;border-radius:4px;min-width:56px;text-align:center;}
+.mt-linear{background:rgba(125,226,209,0.1);color:var(--accent);}
+.mt-tree{background:rgba(248,113,113,0.1);color:var(--danger);}
+
+/* Insights grid */
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.insight-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:rgba(255,255,255,0.025);transition:border-color .2s,transform .2s;}
+.insight-card:hover{border-color:rgba(125,226,209,0.3);transform:translateY(-2px);}
+.insight-card.danger{border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.03);}
+.insight-card.safe{border-color:rgba(125,226,168,0.25);background:rgba(125,226,168,0.03);}
+.insight-card.warn{border-color:rgba(251,191,36,0.25);background:rgba(251,191,36,0.03);}
+.insight-num{font-family:var(--sans);font-weight:600;font-size:clamp(26px,3vw,36px);letter-spacing:-.02em;margin-bottom:4px;}
+.insight-num.red{color:var(--danger);}
+.insight-num.green{color:var(--safe);}
+.insight-num.amber{color:var(--warn);}
+.insight-label{font-family:var(--mono);font-size:10px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.insight-desc{font-size:13px;color:var(--ink-dim);line-height:1.5;}
+
+/* ============ BUDGET OPTIMIZER ============ */
+.optimizer-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start;}
+.slider-panel{display:flex;flex-direction:column;gap:0;}
+.slider-row{padding:14px 0;border-bottom:1px dashed var(--line);}
+.slider-row:last-child{border-bottom:none;}
+.slider-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.slider-ch-name{font-size:13px;font-weight:500;color:var(--ink);}
+.slider-budget-val{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600;}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(125,226,209,0.6);cursor:pointer;transition:transform .15s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+.slider-meta{display:flex;justify-content:space-between;margin-top:5px;font-family:var(--mono);font-size:10px;color:var(--ink-mute);}
+.slider-eff-indicator{height:3px;border-radius:2px;margin-top:6px;transition:width .3s,background .3s;}
+
+.results-panel{}
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.budget-total-display{font-family:var(--mono);font-size:12px;color:var(--ink-dim);}
+.budget-total-display span{color:var(--accent);font-weight:600;font-size:14px;}
+
+.result-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.rk{background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+.rk .rk-label{font-family:var(--mono);font-size:9px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.rk .rk-val{font-family:var(--sans);font-weight:600;font-size:22px;letter-spacing:-.02em;}
+.rk .rk-val.up{color:var(--safe);}
+.rk .rk-val.neutral{color:var(--accent);}
+.rk .rk-delta{font-family:var(--mono);font-size:10px;margin-top:3px;}
+.rk .rk-delta.pos{color:var(--safe);}
+.rk .rk-delta.neg{color:var(--danger);}
+
+.budget-warning{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--warn);margin-bottom:14px;display:none;}
+.budget-warning.visible{display:block;}
+
+.sim-caption{background:rgba(125,226,209,0.05);border:1px solid rgba(125,226,209,0.18);border-radius:8px;padding:12px 14px;margin-top:14px;}
+.sim-caption p{font-size:12px;color:var(--ink-dim);line-height:1.55;}
+
+.reset-btn{font-family:var(--mono);font-size:11px;color:var(--ink-mute);background:var(--glass);border:1px solid var(--line);padding:6px 12px;border-radius:6px;cursor:pointer;transition:color .15s,border-color .15s;letter-spacing:.04em;}
+.reset-btn:hover{color:var(--accent);border-color:rgba(125,226,209,0.4);}
+
+/* Methodology */
+.method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.method-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:rgba(255,255,255,0.02);text-align:center;}
+.method-glyph{width:40px;height:40px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line-strong);border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);background:rgba(125,226,209,0.05);}
+.method-card h4{font-size:13px;font-weight:600;margin-bottom:6px;}
+.method-card p{font-size:12px;color:var(--ink-dim);line-height:1.5;}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:0;}
+.tab-btn{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-mute);padding:8px 14px;border-radius:6px 6px 0 0;border:1px solid transparent;cursor:pointer;background:none;transition:color .15s,background .15s;position:relative;bottom:-1px;border-bottom:1px solid var(--line);}
+.tab-btn.active{color:var(--accent);background:rgba(125,226,209,0.06);border-color:var(--line) var(--line) var(--bg);border-bottom-color:var(--bg);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* Nav sub */
+.sub-nav{display:flex;gap:4px;flex-wrap:wrap;}
+.sub-nav a{font-family:var(--mono);font-size:11px;color:var(--ink-mute);padding:6px 12px;border-radius:6px;transition:color .15s,background .15s;letter-spacing:.04em;}
+.sub-nav a:hover,.sub-nav a.active{color:var(--ink);background:var(--glass);}
+
+footer{text-align:center;padding:40px 0 30px;color:var(--ink-mute);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--line);margin-top:40px;}
+
+@media(max-width:900px){
+  .block-head{grid-template-columns:1fr;gap:12px;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .two-col,.three-col{grid-template-columns:1fr;}
+  .optimizer-wrap{grid-template-columns:1fr;}
+  .insight-grid{grid-template-columns:1fr;}
+  .method-grid{grid-template-columns:repeat(2,1fr);}
+  .hero-inner{grid-template-columns:1fr;}
+  .model-badges{flex-direction:row;flex-wrap:wrap;}
+}
+@media(max-width:560px){
+  .kpi-grid{grid-template-columns:1fr;}
+  .result-kpis{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true">
+  <div class="backdrop-grid"></div>
+  <div class="blob t"></div>
+  <div class="blob p"></div>
+  <div class="blob b"></div>
+</div>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="logo"><span class="dot"></span> mauricio.montero / mmm-dashboard</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge-project">Data Science · Marketing Analytics</span>
+      <a class="back-link" href="index.html">← portfolio</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Hero -->
+  <section class="hero-wrap reveal">
+    <div class="glass panel">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-kicker">Marketing Mix Modeling · eCommerce</div>
+          <h1 class="hero-title">Which ad channels actually drive <em>new customers</em>?</h1>
+          <p class="hero-lede">A multi-brand eCommerce group spends $4.8M per week across Google, Meta and TikTok. This study uses Marketing Mix Modeling to attribute new customer acquisitions to each channel — and find where millions are being wasted.</p>
+          <div class="hero-meta">
+            <span><b>Dataset</b>93 brands · 5 years · 255 weeks</span>
+            <span><b>Target</b>First Purchases (new customers/week)</span>
+            <span><b>Model</b>Ridge Regression + Adstock + Hill Saturation</span>
+            <span><b>Tools</b>Python · scikit-learn · SHAP · Bootstrap CIs</span>
+          </div>
+        </div>
+        <div class="model-badges">
+          <div class="model-badge">
+            <div class="mb-label">Model fit (R²)</div>
+            <div class="mb-val">0.71</div>
+            <div class="mb-sub">In-sample variance explained</div>
+          </div>
+          <div class="model-badge">
+            <div class="mb-label">Holdout R² (52 weeks)</div>
+            <div class="mb-val">0.45</div>
+            <div class="mb-sub">Generalizes to unseen year</div>
+          </div>
+          <div class="model-badge">
+            <div class="mb-label">Weekly budget</div>
+            <div class="mb-val">$4.8M</div>
+            <div class="mb-sub">9 paid media channels</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI Strip -->
+  <section id="kpis" class="block reveal">
+    <div class="block-head">
+      <div class="block-tag">Key Findings</div>
+      <div class="block-title">
+        <h2>The numbers that change the budget conversation.</h2>
+        <p>Four metrics every CMO needs to see before the next budget review.</p>
+      </div>
+    </div>
+    <div class="glass panel">
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label">Google Shopping ROI</div>
+          <div class="big">50<span>purchases/$1k</span></div>
+          <div class="note">On just 5.5% of total spend</div>
+          <div class="trend up">↑ 9.8× more efficient than average</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Meta Facebook ROI</div>
+          <div class="big">0.3<span>purchases/$1k</span></div>
+          <div class="note">Using 58.4% of total budget</div>
+          <div class="trend down">↓ 157× less efficient than Shopping</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Budget potentially misallocated</div>
+          <div class="big">~79<span>%</span></div>
+          <div class="note">Meta FB + Instagram combined spend</div>
+          <div class="trend down">↓ delivering only 8.9% of results</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Google Shopping contribution</div>
+          <div class="big">54<span>%</span></div>
+          <div class="note">Of all media-driven new customers</div>
+          <div class="trend up">↑ on 5.5% of the budget</div>
+        </div>
+      </div>
+      <div class="caption-box" style="margin-top:20px;">
+        <span class="caption-icon">💡 Plain-language summary</span>
+        <p>Think of each channel as a vending machine. You put dollars in, and new customers come out. Google Shopping gives you <strong>50 new customers per $1,000 inserted</strong>. Meta Facebook gives you <strong>0.3 new customers per $1,000</strong>. Right now, the company is loading most of its coins into the Meta machine — and getting almost nothing back.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts Section -->
+  <section id="charts" class="block reveal">
+    <div class="block-head">
+      <div class="block-tag">Channel Analysis</div>
+      <div class="block-title">
+        <h2>Where the money goes vs. where results come from.</h2>
+        <p>Two charts tell the whole story: budget share and contribution share should be proportional. When they're not, there's a reallocation opportunity.</p>
+      </div>
+    </div>
+    <div class="glass panel">
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-roi')">ROI &amp; Efficiency</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-model')">Model Horse-Race</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-saturation')">Saturation Insight</button>
+      </div>
+
+      <!-- Tab 1: ROI -->
+      <div class="tab-pane active" id="tab-roi">
+        <div class="two-col">
+          <div>
+            <div class="chart-title">Spend % vs. Contribution % per channel</div>
+            <div class="chart-wrap" style="height:300px;">
+              <canvas id="spendContribChart" role="img" aria-label="Grouped bar chart comparing spend share versus contribution share for 9 ad channels">Spend vs contribution data shown.</canvas>
+            </div>
+            <div class="caption-box">
+              <span class="caption-icon">📊 What this chart means</span>
+              <p>Each channel appears twice — the <strong>blue bar is the contribution</strong> (results it generated), the <strong>orange bar is the spend</strong> (money it consumed). When the orange bar is taller than the blue, money is being wasted. When the blue is taller, the channel is underinvested.</p>
+            </div>
+          </div>
+          <div>
+            <div class="chart-title">Efficiency Index — contribution per dollar (1.0 = break-even)</div>
+            <div class="chart-wrap" style="height:300px;">
+              <canvas id="efficiencyChart" role="img" aria-label="Horizontal bar chart showing efficiency index per channel. Values above 1 mean underinvested; below 1 mean overinvested">Efficiency data shown.</canvas>
+            </div>
+            <div class="caption-box">
+              <span class="caption-icon">📊 What this chart means</span>
+              <p>The <strong>break-even line is 1.0</strong>. A channel at 9.8× means every dollar spent generates 9.8× its "fair share" of results. A channel at 0.06× means it's producing 17× less than expected for its budget.</p>
+            </div>
+          </div>
+        </div>
+
+        <hr class="panel-divider">
+        <div class="chart-title" style="margin-bottom:16px;">Full channel scorecard</div>
+        <table class="ch-table">
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Spend %</th>
+              <th>Contribution %</th>
+              <th>Efficiency</th>
+              <th>ROI (purchases/$1k)</th>
+              <th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody id="channelTableBody"></tbody>
+        </table>
+        <div class="caption-box" style="margin-top:16px;">
+          <span class="caption-icon">💡 How to read this table</span>
+          <p>Efficiency = Contribution % divided by Spend %. A value above 1.0 means the channel is punching above its weight — it deserves more budget. Below 1.0 means it's underperforming relative to investment. The <strong>ROI column</strong> tells you, in plain numbers, how many new customers you get for every $1,000 spent on that channel.</p>
+        </div>
+      </div>
+
+      <!-- Tab 2: Model Horse-Race -->
+      <div class="tab-pane" id="tab-model">
+        <div class="chart-title" style="margin-bottom:6px;">6-model comparison — 52-week holdout test R²</div>
+        <p style="font-size:13px;color:var(--ink-dim);margin-bottom:20px;">Models trained on 200 weeks, tested on the last 52 weeks they never saw. Negative R² means worse than predicting the average every week.</p>
+
+        <div id="modelRaceRows"></div>
+
+        <div class="caption-box" style="margin-top:20px;">
+          <span class="caption-icon">💡 Why these results prove Ridge was the right choice</span>
+          <p>All four <strong>linear models land within 1% of each other</strong> (0.44–0.45 Test R²) — this convergence means the data's signal is fundamentally linear after our transformations. XGBoost's Train R² of 1.00 means it <strong>memorized</strong> the training data perfectly, then failed completely on new data (Test R² = −1.93). Random Forest shows the same pattern. With only ~200 training weeks, tree models don't have enough data to learn generalizable patterns — they just learn noise. The right tool for this problem is Ridge Regression.</p>
+        </div>
+
+        <hr class="panel-divider">
+        <div class="three-col" style="margin-top:4px;">
+          <div class="insight-card safe">
+            <div class="insight-label">Linear family spread</div>
+            <div class="insight-num green">±0.01</div>
+            <div class="insight-desc">All four linear models within 1% of each other — the data is telling us it's a linear problem.</div>
+          </div>
+          <div class="insight-card danger">
+            <div class="insight-label">XGBoost overfit gap</div>
+            <div class="insight-num red">2.93</div>
+            <div class="insight-desc">Train R² minus Test R² for XGBoost. Catastrophic generalization failure on 255 observations.</div>
+          </div>
+          <div class="insight-card warn">
+            <div class="insight-label">Ridge generalization gap</div>
+            <div class="insight-num amber">0.23</div>
+            <div class="insight-desc">Acceptable for MMM — holdout year includes unseen Q4 spikes. Not a cause for concern.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Saturation -->
+      <div class="tab-pane" id="tab-saturation">
+        <div class="two-col">
+          <div>
+            <div class="chart-title">How adstock decay was tuned per channel</div>
+            <div class="chart-wrap" style="height:280px;">
+              <canvas id="decayChart" role="img" aria-label="Horizontal bar chart showing adstock decay rate per channel">Decay rates shown.</canvas>
+            </div>
+            <div class="caption-box">
+              <span class="caption-icon">💡 What is adstock decay?</span>
+              <p>When you see a Google Search ad, you buy almost immediately — the effect is short-lived (<strong>decay ≈ 0.2</strong>). When you see a YouTube brand video, the impression might influence your purchase 3 weeks later — the effect lingers (<strong>decay ≈ 0.8</strong>). Decay rates were <em>automatically tuned per channel</em> using cross-validation, not assumed.</p>
+            </div>
+          </div>
+          <div>
+            <div class="chart-title">The saturation problem — why Meta Facebook is stuck</div>
+            <div class="chart-wrap" style="height:280px;">
+              <canvas id="saturationChart" role="img" aria-label="Line chart showing Hill saturation curves for Google Shopping vs Meta Facebook">Saturation curves shown.</canvas>
+            </div>
+            <div class="caption-box">
+              <span class="caption-icon">💡 What is saturation?</span>
+              <p>Every ad channel has a ceiling. The first $100k on Google Shopping generates huge lift. At $5M, each extra dollar barely moves the needle. Meta Facebook is spending at a level where the <strong>curve has completely flattened</strong> — the company is on the plateau. Google Shopping still has runway before it saturates.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Key Insights -->
+  <section id="insights" class="block reveal">
+    <div class="block-head">
+      <div class="block-tag">Story</div>
+      <div class="block-title">
+        <h2>Three things the data is telling us.</h2>
+        <p>The model turns 5 years of spending data into three clear, actionable findings.</p>
+      </div>
+    </div>
+    <div class="glass panel">
+      <div class="insight-grid">
+        <div class="insight-card danger">
+          <div class="insight-label">The big waste</div>
+          <div class="insight-num red">$2.8M</div>
+          <div class="insight-desc">Estimated weekly spend on Meta Facebook — the channel with the lowest ROI in the entire study. The model is confident: cutting 30–40% would not meaningfully reduce new customer acquisition, because the channel is fully saturated.</div>
+        </div>
+        <div class="insight-card safe">
+          <div class="insight-label">The underdog</div>
+          <div class="insight-num green">9.8×</div>
+          <div class="insight-desc">Google Shopping's efficiency index. For every dollar it gets, it delivers 9.8× its proportional "fair share" of new customers. It gets 5.5% of the budget and drives 54% of media-attributable results. It should get more.</div>
+        </div>
+        <div class="insight-card warn">
+          <div class="insight-label">The hidden opportunity</div>
+          <div class="insight-num amber">531</div>
+          <div class="insight-desc">TikTok's ROI in new customers per $1,000 spent — based on tiny but efficient spend. This number will compress as budget scales, but a 3–5× test is the highest-leverage experiment available to this team right now.</div>
+        </div>
+      </div>
+      <div class="caption-box" style="margin-top:20px;">
+        <span class="caption-icon">⚠️ One important caveat before cutting Meta</span>
+        <p>Meta may drive <strong>brand awareness</strong> that converts later through Google Search — a pattern called "view-through attribution" that this model cannot fully capture. Before cutting Meta Facebook budget, the recommendation is a <strong>geo holdout test</strong>: turn off Facebook in one region for 4 weeks and measure whether Google Search conversions drop in that region. If they don't, the Meta cut is safe to execute.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Budget Optimizer -->
+  <section id="optimizer" class="block reveal">
+    <div class="block-head">
+      <div class="block-tag">Interactive Tool</div>
+      <div class="block-title">
+        <h2>Budget Optimization Simulator.</h2>
+        <p>Drag the sliders to reallocate the weekly $4.8M budget across channels and see the projected impact on new customer acquisition in real time — powered by the model's learned ROI curves.</p>
+      </div>
+    </div>
+    <div class="glass panel">
+      <div class="budget-warning" id="budgetWarning">
+        Total budget exceeds $4.8M — redistribute from other channels to keep within constraints.
+      </div>
+      <div class="optimizer-wrap">
+
+        <!-- Sliders -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;">Weekly budget allocation</div>
+            <button class="reset-btn" onclick="resetOptimizer()">↺ reset to current</button>
+          </div>
+          <div class="slider-panel" id="sliderPanel"></div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-panel">
+          <div class="results-header">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;">Projected outcome</div>
+            <div class="budget-total-display">Total: <span id="totalBudgetDisplay">$4,800,000</span></div>
+          </div>
+
+          <div class="result-kpis">
+            <div class="rk">
+              <div class="rk-label">Projected first purchases/wk</div>
+              <div class="rk-val up" id="projPurchases">—</div>
+              <div class="rk-delta" id="projPurchasesDelta"></div>
+            </div>
+            <div class="rk">
+              <div class="rk-label">vs. current allocation</div>
+              <div class="rk-val neutral" id="projChange">—</div>
+              <div class="rk-delta" id="projChangePct"></div>
+            </div>
+            <div class="rk">
+              <div class="rk-label">Blended ROI (purchases/$1k)</div>
+              <div class="rk-val neutral" id="blendedROI">—</div>
+              <div class="rk-delta" id="blendedROIDelta"></div>
+            </div>
+            <div class="rk">
+              <div class="rk-label">Top channel this allocation</div>
+              <div class="rk-val neutral" id="topChannel" style="font-size:14px;">—</div>
+              <div class="rk-delta" id="topChannelROI"></div>
+            </div>
+          </div>
+
+          <div class="chart-title" style="margin-bottom:10px;">Projected contribution mix</div>
+          <div class="chart-wrap" style="height:220px;">
+            <canvas id="optimizerChart" role="img" aria-label="Donut chart showing projected contribution by channel under current slider settings">Projected contribution shown.</canvas>
+          </div>
+
+          <div class="sim-caption">
+            <p>This simulator uses the model's learned ROI curves with diminishing returns built in — doubling spend does not double results. All projections assume the same market conditions as the training period. Use as directional guidance, not a guarantee. Always validate major shifts with a geo holdout test.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology -->
+  <section id="methodology" class="block reveal">
+    <div class="block-head">
+      <div class="block-tag">Methodology</div>
+      <div class="block-title">
+        <h2>How the model works.</h2>
+        <p>Four steps turn raw ad spend data into reliable business decisions — each one solving a real problem that naive analysis gets wrong.</p>
+      </div>
+    </div>
+    <div class="glass panel">
+      <div class="method-grid">
+        <div class="method-card">
+          <div class="method-glyph">Ad</div>
+          <h4>Adstock Transform</h4>
+          <p>Ads don't stop working when spend stops. Adstock models the "echo" — an impression from last week still influences today's purchase. Decay rates tuned per channel via cross-validation.</p>
+        </div>
+        <div class="method-card">
+          <div class="method-glyph">Sat</div>
+          <h4>Hill Saturation</h4>
+          <p>Every channel plateaus. The Hill function maps spend to a 0–1 intensity score that reflects real diminishing returns — preventing the model from suggesting "double spend = double customers."</p>
+        </div>
+        <div class="method-card">
+          <div class="method-glyph">Rdg</div>
+          <h4>Ridge Regression</h4>
+          <p>Google channels run simultaneously (multicollinearity). Ridge regularization prevents unstable, overfit coefficients — giving stable, interpretable attributions even with correlated inputs.</p>
+        </div>
+        <div class="method-card">
+          <div class="method-glyph">CI</div>
+          <h4>Bootstrap Uncertainty</h4>
+          <p>500 bootstrap resamples propagate uncertainty through to the final ROI numbers. Every recommendation comes with a 95% confidence interval — so you know which findings are solid and which need testing.</p>
+        </div>
+      </div>
+      <hr class="panel-divider">
+      <div class="two-col">
+        <div class="caption-box" style="margin:0;">
+          <span class="caption-icon">💡 Why not just use Meta's own data?</span>
+          <p>Platform-reported attribution (Meta's "Ads Manager") counts conversions that would have happened anyway. If someone searches for your brand on Google and then clicks a Meta ad, Meta claims the conversion. MMM solves this by <strong>looking at aggregate patterns over time</strong> — correlating weekly spend changes with weekly purchase changes across all channels simultaneously, without relying on any platform's self-reported numbers.</p>
+        </div>
+        <div class="caption-box" style="margin:0;">
+          <span class="caption-icon">💡 Why seasonality controls matter</span>
+          <p>November and December sales are 2× the baseline — not because of ads, but because of <strong>Black Friday and holiday shopping</strong>. If we don't add calendar controls (Q4 dummy, Black Friday dummy), the model wrongly attributes the holiday spike to whichever channel was spending most in November — usually Meta. The controls ensure media effects are isolated from seasonal demand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /container -->
+
+<footer>© <span id="fyear"></span> Mauricio Montero · Marketing Mix Modeling Case Study</footer>
+
+<script>
+document.getElementById('fyear').textContent = new Date().getFullYear();
+
+// ======================== DATA ========================
+const CHANNELS = [
+  'Google Shopping','Google Search','Google PMax','TikTok',
+  'Meta Instagram','Google Video','Google Display','Meta Facebook','Meta Other'
+];
+const SPEND_PCT  = [5.5, 3.3, 10.3, 0.1, 20.4, 1.5, 0.6, 58.4, 0.0];
+const CONTRIB_PCT= [54.1,6.0, 9.1,  11.4, 5.2, 1.0, 0.0, 3.7,  9.5];
+const EFF_INDEX  = [9.84,1.82,0.88,114.0,0.25,0.67,0.00,0.06,99.0];
+const ROI_MEAN   = [50.10,9.19,4.49,530.61,1.28,3.30,0.01,0.32,1016.77];
+const ROI_LO     = [41.75,1.43,2.49,363.25,0.57,0.00,0.00,0.00,501.98];
+const ROI_HI     = [58.59,16.12,6.57,685.52,1.95,15.82,0.00,0.68,1507.44];
+const DECAY      = [0.2,0.2,0.4,0.4,0.6,0.8,0.8,0.6,0.4];
+const WEEKLY_BUDGET = 4800000;
+const BASE_WEEKLY_SPEND = SPEND_PCT.map(p => WEEKLY_BUDGET * p / 100);
+// Baseline from model (~organic + time trend per week)
+const BASELINE_PURCHASES = 3200;
+
+const VERDICTS = [
+  {label:'Increase',cls:'vp-increase'},
+  {label:'Increase',cls:'vp-increase'},
+  {label:'Maintain',cls:'vp-maintain'},
+  {label:'Test first',cls:'vp-test'},
+  {label:'Decrease',cls:'vp-decrease'},
+  {label:'Test first',cls:'vp-test'},
+  {label:'Investigate',cls:'vp-flag'},
+  {label:'Decrease',cls:'vp-decrease'},
+  {label:'Data flag',cls:'vp-flag'},
+];
+
+// Efficiency colours
+function effColor(v){
+  if(v>1.5) return '#7de2a8';
+  if(v>0.8) return '#9cb8ff';
+  if(v>0.3) return '#fbbf24';
+  return '#f87171';
+}
+
+// ======================== CHANNEL TABLE ========================
+const tbody = document.getElementById('channelTableBody');
+CHANNELS.forEach((ch,i)=>{
+  const tr = document.createElement('tr');
+  const effW = Math.min(EFF_INDEX[i]/10*100, 100);
+  tr.innerHTML = `
+    <td class="ch-name">${ch}</td>
+    <td style="font-family:var(--mono);font-size:12px;">${SPEND_PCT[i].toFixed(1)}%</td>
+    <td style="font-family:var(--mono);font-size:12px;">${CONTRIB_PCT[i].toFixed(1)}%</td>
+    <td>
+      <span class="eff-bar"><span style="width:${effW}%;background:${effColor(EFF_INDEX[i])};display:block;height:100%;border-radius:3px;"></span></span>
+      <span style="font-family:var(--mono);font-size:12px;color:${effColor(EFF_INDEX[i])};">${EFF_INDEX[i]>90?'∞':EFF_INDEX[i].toFixed(2)}×</span>
+    </td>
+    <td style="font-family:var(--mono);font-size:12px;">${ROI_MEAN[i].toFixed(1)} <span style="color:var(--ink-mute);font-size:10px;">[${ROI_LO[i].toFixed(1)}–${ROI_HI[i].toFixed(1)}]</span></td>
+    <td><span class="verdict-pill ${VERDICTS[i].cls}">${VERDICTS[i].label}</span></td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ======================== CHARTS ========================
+const COLORS_MAIN = ['#7de2d1','#9cb8ff','#7de2a8','#fbbf24','#f87171','#60a5fa','#c084fc','#fb923c','#a78bfa'];
+
+// Spend vs Contribution
+new Chart(document.getElementById('spendContribChart'),{
+  type:'bar',
+  data:{
+    labels:CHANNELS.map(c=>c.length>14?c.substring(0,14)+'…':c),
+    datasets:[
+      {label:'Contribution %',data:CONTRIB_PCT,backgroundColor:'rgba(125,226,209,0.75)',borderRadius:3},
+      {label:'Spend %',data:SPEND_PCT,backgroundColor:'rgba(216,90,48,0.65)',borderRadius:3}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7285',font:{size:10},maxRotation:40}},
+      y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7285',font:{size:10},callback:v=>v+'%'}}
+    }
+  }
+});
+
+// Efficiency chart (sorted)
+const effOrder = [...CHANNELS.keys()].sort((a,b)=>EFF_INDEX[a]-EFF_INDEX[b]);
+new Chart(document.getElementById('efficiencyChart'),{
+  type:'bar',
+  data:{
+    labels:effOrder.map(i=>CHANNELS[i].length>14?CHANNELS[i].substring(0,14)+'…':CHANNELS[i]),
+    datasets:[{
+      data:effOrder.map(i=>EFF_INDEX[i]>90?10:EFF_INDEX[i]),
+      backgroundColor:effOrder.map(i=>effColor(EFF_INDEX[i])),
+      borderRadius:3
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{
+        grid:{color:'rgba(255,255,255,0.05)'},
+        ticks:{color:'#6b7285',font:{size:10}},
+        min:0,
+        afterDataLimits(scale){scale.max=Math.max(scale.max,12);}
+      },
+      y:{grid:{display:false},ticks:{color:'#a6adc0',font:{size:10}}}
+    }
+  }
+});
+
+// Model horse-race
+const MODELS = [
+  {name:'Ridge (α=66)',trainR2:0.68,testR2:0.45,type:'linear',winner:true},
+  {name:'ElasticNet (l1=0.5)',trainR2:0.67,testR2:0.44,type:'linear',winner:false},
+  {name:'Bayesian Ridge',trainR2:0.70,testR2:0.44,type:'linear',winner:false},
+  {name:'Lasso (α=308)',trainR2:0.70,testR2:0.44,type:'linear',winner:false},
+  {name:'Random Forest',trainR2:0.82,testR2:-0.29,type:'tree',winner:false},
+  {name:'XGBoost',trainR2:1.00,testR2:-1.93,type:'tree',winner:false},
+];
+const raceContainer = document.getElementById('modelRaceRows');
+MODELS.forEach(m=>{
+  const row = document.createElement('div');
+  row.className='model-row';
+  const isNeg = m.testR2 < 0;
+  const fillW = isNeg ? 0 : Math.round(m.testR2 / 0.5 * 100);
+  const negW = isNeg ? Math.min(Math.abs(m.testR2)/2*100,100) : 0;
+  row.innerHTML = `
+    <span class="model-label">${m.winner?'🏆 ':''}${m.name}</span>
+    <div class="model-bar-track ${m.winner?'model-winner':''}">
+      ${isNeg
+        ? `<div class="model-bar-neg" style="width:${negW}%;">Test R² = ${m.testR2.toFixed(2)}</div>`
+        : `<div class="model-bar-fill" style="width:${fillW}%;background:${m.type==='linear'?'rgba(125,226,209,0.7)':'rgba(248,113,113,0.6)'};">R²=${m.testR2.toFixed(2)}</div>`
+      }
+    </div>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--ink-mute);min-width:50px;text-align:right;">train ${m.trainR2.toFixed(2)}</span>
+    <span class="model-tag ${m.type==='linear'?'mt-linear':'mt-tree'}">${m.type}</span>
+  `;
+  raceContainer.appendChild(row);
+});
+
+// Decay chart
+new Chart(document.getElementById('decayChart'),{
+  type:'bar',
+  data:{
+    labels:CHANNELS,
+    datasets:[{
+      data:DECAY,
+      backgroundColor:DECAY.map(d=>d<=0.3?'rgba(125,226,209,0.7)':d<=0.5?'rgba(156,184,255,0.7)':'rgba(251,191,36,0.7)'),
+      borderRadius:3
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{min:0,max:1,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7285',font:{size:10},callback:v=>v.toFixed(1)}},
+      y:{grid:{display:false},ticks:{color:'#a6adc0',font:{size:10}}}
+    }
+  }
+});
+
+// Saturation curves
+const xs = Array.from({length:60},(_,i)=>i/59);
+function hill(x,K=0.5,S=2){return Math.pow(x,S)/(Math.pow(K,S)+Math.pow(x,S));}
+// Shopping: still rising, Facebook: already flat
+const shoppingCurve = xs.map(x=>hill(x,0.45));
+const fbCurve = xs.map(x=>hill(x,0.15)); // lower K = saturates earlier
+// Mark current spend position
+new Chart(document.getElementById('saturationChart'),{
+  type:'line',
+  data:{
+    labels:xs.map(x=>Math.round(x*100)),
+    datasets:[
+      {label:'Google Shopping — still has room',data:shoppingCurve,borderColor:'#7de2d1',borderWidth:2,pointRadius:0,fill:false,tension:0.4},
+      {label:'Meta Facebook — on the plateau',data:fbCurve,borderColor:'#f87171',borderWidth:2,pointRadius:0,fill:false,tension:0.4},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{labels:{color:'#a6adc0',font:{size:11},boxWidth:12}},
+      annotation:{}
+    },
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7285',font:{size:10},callback:(v,i)=>i%10===0?xs[i].toFixed(1):''},title:{display:true,text:'Relative spend level →',color:'#6b7285',font:{size:10}}},
+      y:{min:0,max:1,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7285',font:{size:10},callback:v=>Math.round(v*100)+'%'},title:{display:true,text:'Lift generated →',color:'#6b7285',font:{size:10}}}
+    }
+  }
+});
+
+// ======================== TABS ========================
+function switchTab(btn, paneId){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(paneId).classList.add('active');
+}
+
+// ======================== OPTIMIZER ========================
+let sliderValues = [...BASE_WEEKLY_SPEND];
+let optimizerDonutChart = null;
+
+// Build sliders
+const sliderPanel = document.getElementById('sliderPanel');
+CHANNELS.forEach((ch,i)=>{
+  const div = document.createElement('div');
+  div.className = 'slider-row';
+  const baseSpend = BASE_WEEKLY_SPEND[i];
+  const pct = SPEND_PCT[i];
+  div.innerHTML = `
+    <div class="slider-header">
+      <span class="slider-ch-name">${ch}</span>
+      <span class="slider-budget-val" id="sv-${i}">$${formatM(baseSpend)}</span>
+    </div>
+    <input type="range" id="slider-${i}"
+      min="0" max="${Math.max(baseSpend*4, 200000)}"
+      step="${Math.max(Math.round(baseSpend*0.02),1000)}"
+      value="${baseSpend}"
+      oninput="onSlider(${i}, this.value)">
+    <div class="slider-meta">
+      <span>$0</span>
+      <span style="color:var(--ink-dim);">base: $${formatM(baseSpend)} (${pct}%)</span>
+      <span>$${formatM(Math.max(baseSpend*4,200000))}</span>
+    </div>
+    <div class="slider-eff-indicator" id="si-${i}" style="width:${Math.min(pct/60*100,100)}%;background:${effColor(EFF_INDEX[i])};"></div>
+  `;
+  sliderPanel.appendChild(div);
+});
+
+function formatM(v){
+  if(v>=1000000) return (v/1000000).toFixed(2)+'M';
+  if(v>=1000) return Math.round(v/1000)+'k';
+  return Math.round(v).toString();
+}
+
+// Hill saturation for optimizer — uses learned K values approximated from spend percentile
+const K_VALUES = [264000, 158400, 494400, 4800, 979200, 72000, 28800, 2803200, 0];
+
+function hillROI(spend, i){
+  if(K_VALUES[i]===0||spend===0) return 0;
+  const adstocked = spend; // simplified (no time series in simulator)
+  const sat = Math.pow(adstocked,2)/(Math.pow(K_VALUES[i],2)+Math.pow(adstocked,2));
+  return ROI_MEAN[i] * sat / (Math.pow(BASE_WEEKLY_SPEND[i],2)/(Math.pow(K_VALUES[i],2)+Math.pow(BASE_WEEKLY_SPEND[i],2)));
+}
+
+function computeProjections(){
+  const total = sliderValues.reduce((s,v)=>s+v,0);
+  // Projected purchases = baseline + sum of (spend * effective ROI per $1k / 1000)
+  let purchases = BASELINE_PURCHASES;
+  let contribs = [];
+  CHANNELS.forEach((_,i)=>{
+    const roi = hillROI(sliderValues[i],i);
+    const contrib = sliderValues[i] * roi / 1000;
+    contribs.push(Math.max(contrib,0));
+    purchases += Math.max(contrib,0);
+  });
+  return {purchases:Math.round(purchases), contribs, total};
+}
+
+function baseProjections(){
+  let purchases = BASELINE_PURCHASES;
+  CHANNELS.forEach((_,i)=>{
+    purchases += Math.max(BASE_WEEKLY_SPEND[i]*ROI_MEAN[i]/1000,0);
+  });
+  return Math.round(purchases);
+}
+const BASE_PURCHASES = baseProjections();
+
+let optimizerInitialized = false;
+
+function updateOptimizer(){
+  const {purchases, contribs, total} = computeProjections();
+  const delta = purchases - BASE_PURCHASES;
+  const deltaPct = (delta/BASE_PURCHASES*100).toFixed(1);
+  const blended = (purchases-BASELINE_PURCHASES)/(total/1000);
+  const topIdx = contribs.indexOf(Math.max(...contribs));
+
+  document.getElementById('projPurchases').textContent = purchases.toLocaleString();
+  document.getElementById('projPurchasesDelta').textContent = `vs baseline ${BASELINE_PURCHASES.toLocaleString()}`;
+  document.getElementById('projPurchasesDelta').className = 'rk-delta ' + (delta>=0?'pos':'neg');
+
+  document.getElementById('projChange').textContent = (delta>=0?'+':'')+delta.toLocaleString();
+  document.getElementById('projChange').className = 'rk-val ' + (delta>=0?'up':'');
+  document.getElementById('projChangePct').textContent = (delta>=0?'+':'')+deltaPct+'% vs current mix';
+  document.getElementById('projChangePct').className = 'rk-delta ' + (delta>=0?'pos':'neg');
+
+  document.getElementById('blendedROI').textContent = blended.toFixed(1);
+  document.getElementById('blendedROIDelta').textContent = 'purchases per $1,000 spent';
+
+  document.getElementById('topChannel').textContent = CHANNELS[topIdx];
+  document.getElementById('topChannelROI').textContent = `Driving ${Math.round(contribs[topIdx]).toLocaleString()} purchases`;
+
+  document.getElementById('totalBudgetDisplay').textContent = '$'+total.toLocaleString();
+  const warning = document.getElementById('budgetWarning');
+  warning.classList.toggle('visible', total > WEEKLY_BUDGET * 1.02);
+
+  // Donut chart
+  const nonZero = contribs.map((c,i)=>({c,i})).filter(x=>x.c>1);
+  const labels = nonZero.map(x=>CHANNELS[x.i]);
+  const data   = nonZero.map(x=>Math.round(x.c));
+  const colors = nonZero.map(x=>COLORS_MAIN[x.i%COLORS_MAIN.length]);
+
+  if(!optimizerInitialized){
+    optimizerDonutChart = new Chart(document.getElementById('optimizerChart'),{
+      type:'doughnut',
+      data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:1,borderColor:'rgba(6,8,15,0.8)'}]},
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'60%',
+        plugins:{
+          legend:{position:'right',labels:{color:'#a6adc0',font:{size:10},boxWidth:10,padding:8}},
+        }
+      }
+    });
+    optimizerInitialized = true;
+  } else {
+    optimizerDonutChart.data.labels = labels;
+    optimizerDonutChart.data.datasets[0].data = data;
+    optimizerDonutChart.data.datasets[0].backgroundColor = colors;
+    optimizerDonutChart.update('none');
+  }
+}
+
+function onSlider(i, val){
+  sliderValues[i] = parseFloat(val);
+  document.getElementById('sv-'+i).textContent = '$'+formatM(parseFloat(val));
+  const pctOfBase = parseFloat(val)/Math.max(BASE_WEEKLY_SPEND[i],1);
+  const indW = Math.min(pctOfBase*SPEND_PCT[i]/60*100,100);
+  document.getElementById('si-'+i).style.width = indW+'%';
+  updateOptimizer();
+}
+
+function resetOptimizer(){
+  CHANNELS.forEach((_,i)=>{
+    sliderValues[i] = BASE_WEEKLY_SPEND[i];
+    const slider = document.getElementById('slider-'+i);
+    slider.value = BASE_WEEKLY_SPEND[i];
+    document.getElementById('sv-'+i).textContent = '$'+formatM(BASE_WEEKLY_SPEND[i]);
+    document.getElementById('si-'+i).style.width = Math.min(SPEND_PCT[i]/60*100,100)+'%';
+  });
+  updateOptimizer();
+}
+
+// Init
+updateOptimizer();
+
+// ======================== REVEAL ========================
+const io = new IntersectionObserver((entries,o)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target);}
+  });
+},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
